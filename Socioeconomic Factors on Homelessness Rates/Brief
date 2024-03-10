@@ -1,0 +1,35 @@
+Project Title
+Analyzing the Impact of Socioeconomic Factors on Homelessness Rates in Downtown Los Angeles, CA: A Multivariate Linear Regression Approach
+
+Project Overview
+This project aims to identify and quantify the impact of various socioeconomic, policy, and environmental factors on homelessness rates in Los Angeles, California. 
+By employing multivariate linear regression, the study will explore how variables such as unemployment rates, housing affordability, 
+social services availability, and others contribute to the homelessness crisis.
+
+Concerns
+Scope and timing. I need to stay within the project intent here. I won't solve this issue. 
+Should I limit the scope further ? Maybe a single sub-population. Single un-wed mothers is the largest cohort.
+Do I have a hypothesis to work from ?? 
+
+
+Data Sets
+
+Qualitative Data
+Can I interview local officials, policymakers, representatives, or any organization working on homelessness ?
+Possibly individuals experiencing homelessness, although I know this can get dangerous very quickly.
+Can/should I use my experiences from my time living in DTLA or working with the ETC ?
+Do I build personas ?
+
+Quantitative Data
+Public datasets from the U.S. Census Bureau, HUD, and local Los Angeles government databases for socioeconomic data.
+Homelessness rates and demographic information from Los Angeles County's Homeless Services Authority.
+Potentially, primary data from interviews with community leaders and observations within Downtown Los Angeles.
+
+Integrating Qualitative Insights with Quantiitative Data
+As before, use the qualitative data to find patterns, and then measure them with the quantitative data. 
+Analyze the interview transcripts to extract key themes, challenges, and suggested solutions. 
+This qualitative analysis can help inform your regression model's variables and provide a deeper understanding of the homelessness dynamics in Downtown Los Angeles.
+Combining Qualitative and Quantitative Data: Use insights gained from your interviews and observations to interpret the results of your multivariate linear regression model. For example, if interviewees highlight the lack of affordable housing as a critical issue, examine how housing cost variables interact with homelessness rates in your model.
+
+
+
