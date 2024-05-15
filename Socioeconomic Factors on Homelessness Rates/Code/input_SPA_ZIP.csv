@@ -1,0 +1,161 @@
+﻿Zip Code,Area Name ,SPA ,Supervisorial District/s 
+90001,Florence/South Central ,6,"1,2"
+90002,Watts ,6,2
+90003,South Central ,6,2
+90004,Hancock Park ,4,"1,2,3"
+90005,Koreatown ,4,"1,2,3"
+90006,Pico Heights ,4,"1,2"
+90007,South Central ,6,"1,2"
+90008,Baldwin Hills/Crenshaw ,6,2
+90010,Wilshire Blvd ,4,"2,3"
+90011,South Central ,6,"1,2"
+90012,Civic Center/Chinatown ,4,1
+90013,Downtown LA ,4,"2,3"
+90014,Los Angeles ,4,"2,3"
+90015,Downtown LA ,4,"2,3"
+90016,West Adams ,6,2
+90017,Downtown LA ,4,1
+90018,Jefferson Park ,6,2
+90019,Country Club Park/Mid City,4,2
+90020,Hancock Park ,4,"2,3"
+90021,Downtown LA ,4,"1,2"
+90023,East LA/Commerce ,4,1
+90026,Echo Park/Silverlake ,4,1
+90027,Griffith Park/Los Feliz ,4,"1,3"
+90028,Hollywood ,4,3
+90029,Downtown LA,4,"1,2,3"
+90033,Boyle Heights,4,1
+90035,West Fairfax,5,"2,3"
+90036,Park La Brea,4,"2,3"
+90037,South Central,6,2
+90038,Hollywood/West Hollywood,4,3
+90039,Atwater Village,4,"1,3"
+90043,Hyde Park/View Park/Windsor Hills,6,2
+90044,Athens ,6,2
+90046,Mount Olympus,4,3
+90047,South Central,6,2
+90048,West Beverly,4,"2,3"
+90057,Westlake ,6,"1,2"
+90058,Vernon ,7,"1,2"
+90062,South Central,6,2
+90068,Hollywood,4,3
+90069,West Hollywood,4,3
+90071,ARCO Towers,4,1
+90089,University of Southern CA,4,2
+90201,Bell Gardens ,7,"1,4"
+90211,Beverly Hills,4,"2,3"
+90212,Beverly Hills,4,3
+90220,Compton/Rancho Dominguez,6,2
+90221,East Rancho Dominguez ,6,2
+90222,Compton/Rosewood/Willowbrook,6,2
+90240,Downey ,7,"1,4"
+90241,Downey ,7,4
+90242,Downey ,7,4
+90247,Gardena ,8,"2,4"
+90248,Gardena ,8,"2,4"
+90255,Huntington Park/Walnut Park,7,"1,2"
+90262,Lynwood ,6,"2,4"
+90280,South Gate ,7,"1,2,4"
+90501,Torrance ,8,4
+90502,Torrance ,8,"2,4"
+90601,Whittier ,7,"1,4"
+90602,Whittier ,7,4
+90603,Whittier ,7,4
+90605,Whittier ,7,"1,4"
+90630,Cypress  ,7,4
+90650,Norwalk ,7,4
+90670,Santa Fe Springs ,7,4
+90701,Cerritos ,7,4
+90703,Cerritos ,7,4
+90706,Bellflower ,7,4
+90712,Lakewood ,7,4
+90713,Lakewood ,7,4
+90715,Lakewood,7,4
+90716,Hawaiian Gardens,7,4
+90723,Paramount,6,"1,2,4"
+90744,Wilmington,6,"2,4"
+90745,Carson,8,"2,4"
+90746,Carson,8,2
+90747,Carson/Cal State Dominguez Hills,8,2
+90755,Signal Hill,8,4
+90802,Long Beach,8,4
+90804,Long Beach,8,4
+90805,North Long Beach,8,"2,4"
+90806,Long Beach,8,4
+90807,Long Beach,8,4
+90808,Long Beach,8,4
+90810,Carson/Long Beach,8,"2,4"
+90813,Long Beach,8,4
+90814,Long Beach,8,4
+90822,Long Beach,8,4
+90831,Long Beach/World Trade Center,8,4
+90840,Cal State Long Beach,8,4
+90846,Long Beach/Boeing,8,4
+91006,Arcadia ,7,5
+91007,Arcadia ,3,5
+91101,Pasadena ,3,5
+91104,Pasadena ,3,5
+91106,Pasadena ,3,5
+91107,Pasadena ,3,5
+91108,San Marino ,3,5
+91125,Pasadena/Cal Tech ,3,5
+91126,Pasadena/Cal Tech ,3,5
+91303,Canoga Park ,2,3
+91306,Winnetka ,2,3
+91324,Northridge ,2,"3,6"
+91325,Northridge ,2,"3,6"
+91330,Cal State Northridge ,2,"3,6"
+91331,Arleta/Pacoima ,2,3
+91335,Reseda ,2,3
+91343,North Hills ,2,"3,5"
+91344,Granada Hills ,2,"3,5"
+91345,Mission Hills ,2,3
+91352,Sun Valley ,2,"3,5"
+91367,Woodland Hills ,2,3
+91401,Van Nuys ,2,3
+91402,Panorama City ,2,3
+91403,Sherman Oaks/Van Nuys,2,3
+91405,Van Nuys ,2,3
+91406,Van Nuys ,2,3
+91411,Van Nuys ,2,3
+91423,Sherman Oaks/Van Nuys,2,3
+91504,Burbank/Glenoaks,2,5
+91505,Burbank ,2,"3,5"
+91601,North Hollywood,2,"3,5"
+91602,North Hollywood/Toluca Lake,2,3
+91604,North Hollywood/Studio City,2,3
+91605,North Hollywood,2,"3,5"
+91606,North Hollywood,2,3
+91607,North Hollywood/Valley Village,2,3
+91608,Universal City,4,3
+91706,Baldwin Park/Irwindale ,3,1
+91709,Chino Hills ,3,1
+91710,Chino ,3,"1,4"
+91722,Covina ,3,"1,5"
+91723,Covina ,3,5
+91724,Covina ,3,"1,5"
+91731,El Monte ,3,1
+91732,El Monte ,3,"1,5"
+91733,South El Monte,3,1
+91740,Glendora ,3,5
+91744,City of Industry/La Puente/Valinda,3,1
+91745,Hacienda Heights/La Puente,3,"1,4"
+91746,Bassett/City of Industry/La Puente,3,"1,4"
+91766,Phillips Ranch/Pomona,3,"1,4"
+91768,Pomona ,3,"1,5"
+91770,Rosemead,3,"1,5"
+91773,San Dimas,3,"1,5"
+91775,San Gabriel,3,5
+91776,San Gabriel,3,"1,5"
+91780,Temple City,3,"1,5"
+91789,Diamond Bar/City of Industry/Walnut,3,"1,4,5"
+91790,West Covina,3,1
+91791,West Covina,3,1
+91792,West Covina,3,"1,5"
+91801,Alhambra ,3,5
+93534,Lancaster ,7,5
+93535,Lancaster/Hi Vista ,7,5
+93536,Lancaster ,7,5
+93550,Palmdale/Lake Los Angeles,1,5
+93551,Palmdale ,1,5
+93552,Palmdale ,1,5
