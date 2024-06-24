@@ -1,0 +1,1302 @@
+---
+title: Exploring the Predictive Power of Socioeconomic Data on Homelessness in Los
+  Angeles, CA
+author: "Elgas"
+date: "2024-03-12"
+output:
+  pdf_document: default
+---
+
+```{r setup, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Clear objects
+rm(list = ls()) 
+
+# Clear the current graphics device
+#dev.off()
+
+print("DONE")
+
+```
+
+
+# Provision Enviornment
+
+```{r, Prep Enviornment, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+#install.packages("ggplot2") 
+#install.packages("dplyr") 
+#install.packages("stringr") 
+#install.packages("psych") 
+#install.packages("tidyr") 
+#install.packages("car") 
+#install.packages("corrplot") 
+#install.packages("betareg")
+#install.packages("lmtest")
+#install.packages("xgboost")
+#install.packages("Hmisc")
+
+# Load libraries
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(psych)
+library(tidyr)
+library(car)
+library(corrplot)
+library(betareg)
+library(lmtest)
+library(purrr)
+library(xgboost)
+library(Hmisc)
+library(data.table)
+library(caret)
+library(randomForest)
+
+print("DONE")
+```
+
+
+# Build lookup table to translate between different datasets
+
+```{r, Census Tract Mapping, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+# This file is a mapping of tract and zipcode for a lookup file
+df_tab_20 <- read.csv("datasets/input_tab20_zcta520_tract20_natl.csv", sep = ",")
+
+# Pre-processing
+# Set feature names and data types to agree other datasets
+df_tab_20$TRACT <- format(df_tab_20$TRACT, nsmall = 0)
+
+# Remove "." character from Tract column
+df_tab_20$TRACT <- gsub("\\.", "", df_tab_20$TRACT)
+
+df_tab_20$TRACT <- trimws(df_tab_20$TRACT)
+
+df_tab_20 <- df_tab_20 %>%
+  rename(`ZIP` = GEOID_ZCTA5_20)
+
+df_tab_20$ZIP <- as.character(df_tab_20$ZIP)
+
+df_tab_20 <- df_tab_20 %>%
+  rename(`Tract_Name` = NAMELSAD_TRACT_20)
+
+df_tab_20 <- df_tab_20 %>%
+  rename(`Tract` = TRACT)
+
+df_tab_20$Tract <- as.character(df_tab_20$Tract)
+
+df_tab_20 <- df_tab_20[, c("ZIP", "Tract", "Tract_Name")]
+
+# Reduce to unique values
+df_tab_20 <- df_tab_20 %>%
+  select(ZIP, Tract) %>% 
+  distinct()  
+
+# Check for duplicates
+duplicate_counts <- df_tab_20 %>%
+  group_by(ZIP, Tract) %>%
+  summarise(Count = n(), .groups = 'drop') %>%
+  filter(Count > 1)
+
+# This file has zipcodes for  each SPA
+df_spa_zip <- read.csv("datasets/input_SPA_ZIP_Calfund.csv", sep = ",")
+
+df_spa_zip <- df_spa_zip %>%
+  rename(`ZIP` = Zipcode)
+
+df_spa_zip <- df_spa_zip[, c("SPA","ZIP")]
+
+df_spa_zip <- df_spa_zip %>%
+  mutate(ZIP = as.character(ZIP))
+
+df_spa_zip <- df_spa_zip %>%
+  mutate(SPA = as.character(SPA))
+
+# Reduce to unique values
+df_spa_zip <- df_spa_zip %>%
+  select(SPA,ZIP) %>% 
+  distinct()  
+
+# This table merges the two prior to product SPA, ZIP and Tract
+df_lookup <- df_tab_20 %>%
+  left_join(df_spa_zip, by = "ZIP") %>%
+  mutate(SPA = coalesce(SPA, "Not Available"))
+
+# Reduce to unique values
+df_lookup <- df_lookup %>%
+  select(SPA,ZIP, Tract) %>% 
+  distinct()  
+
+# Check for duplicates
+duplicate_counts <- df_lookup %>%
+  group_by(Tract, SPA, ZIP) %>%
+  summarise(Count = n(), .groups = 'drop') %>%
+  filter(Count > 1)
+
+#print(names(df_lookup))
+#print(df_lookup)
+
+# Write data to a local file for offline use
+write.csv(df_lookup, "datasets/output_df_lookup.csv", row.names = FALSE)
+
+print("DONE")
+
+```
+
+
+# Ingest P1 table from 2020 Census
+
+```{r, Census Data, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+# Ingest 2020 Census data
+# Append SPA per Tract
+# No aggregation at this point
+
+df_census <- read.csv("datasets/input_2020_census_p1.csv", sep = ",")
+
+df_census$Census.Tract <- format(df_census$Census.Tract, nsmall = 0)
+
+df_census$Census.Tract <- trimws(df_census$Census.Tract)
+
+# Remove "." character from Tract column
+df_census$Census.Tract <- gsub("\\.", "", df_census$Census.Tract)
+
+names(df_census) <- trimws(names(df_census))
+
+df_census <- df_census %>%
+  rename(Count_Tract = `Census.Tract`)
+
+# Reduce dataset to just counts
+df_census <- df_census %>%
+  select(starts_with("Count"))
+
+# Rename to a common value
+df_census <- df_census %>%
+  rename(Tract = `Count_Tract`)
+
+# Append the SPA value to the Census data
+# Do not include ZIP
+df_census_spa <- df_census %>%
+  left_join(df_lookup %>% select(-ZIP), by = "Tract") %>%
+  distinct()
+
+# Remove unusable data
+
+unsuable_demos <- c(
+  
+  "Count__TOTAL.RACES.TALLIED..1.__Total.races.tallied",
+  "Count__TOTAL.RACES.TALLIED..1.__Total.races.tallied__White.alone.or.in.combination.with.one.or.more.other.races",    
+  "Count__TOTAL.RACES.TALLIED..1.__Total.races.tallied__American.Indian.and.Alaska.Native.alone.or.in.combination.with.one.or.more.other.races",
+  "Count__TOTAL.RACES.TALLIED..1.__Total.races.tallied__Asian.alone.or.in.combination.with.one.or.more.other.races",
+  "Count__TOTAL.RACES.TALLIED..1.__Total.races.tallied__Native.Hawaiian.and.Other.Pacific.Islander.alone.or.in.combination.with.one.or.more.other.races",
+  "Count__TOTAL.RACES.TALLIED..1.__Total.races.tallied__Some.Other.Race.alone.or.in.combination.with.one.or.more.other.races", 
+  "Count__TOTAL.RACES.TALLIED..1.__Total.races.tallied__Black.or.African.American.alone.or.in.combination.with.one.or.more.other.races",
+  "Count__HOUSING.TENURE__Occupied.housing.units",
+  "Count__HOUSING.TENURE__Occupied.housing.units__Owner.occupied.housing.units",
+  "Count__HOUSING.TENURE__Occupied.housing.units__Renter.occupied.housing.units",
+  "Count__MEDIAN.AGE.BY.SEX__Both.sexes",
+  "Count__MEDIAN.AGE.BY.SEX__Male",
+  "Count__MEDIAN.AGE.BY.SEX__Female"
+)
+
+# Remove the manually specified variables from the final reduced dataset
+df_census_spa <- df_census_spa[, !(names(df_census_spa) %in% unsuable_demos)]
+
+
+# Move the SPA column to the first position
+df_census_spa <- df_census_spa %>%
+  select(SPA,Tract, everything()) %>%
+  distinct()
+
+# Order by SPA
+df_census_spa <- df_census_spa[order(df_census_spa$SPA), ]
+
+# Reduce to unique values
+df_census_spa <- df_census_spa %>%
+  distinct()  
+
+# Cast all values to Int in support of future manipulations
+df_census_spa <- df_census_spa %>%
+  mutate_all(as.integer)
+
+# Print the ordered dataframe
+#print(names(df_census_spa))
+
+# Write data to a local file for offline use
+write.csv(df_census_spa, "datasets/output_df_census_spa.csv", row.names = FALSE)
+
+print("DONE")
+```
+
+
+# Calculate pecent homeless by SPA
+
+```{r, Percent Homeless by SPA, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+# Calculate total populations per SPA based on Census data
+
+df_census_spa_tot <- df_census_spa %>%
+  select(SPA, "Count__SEX.AND.AGE__Total.population") %>%  # Keep only SPA and Count__SEX.AND.AGE__Total.population
+  group_by(SPA) %>%
+  summarise(Total_SPA_Census = sum(Count__SEX.AND.AGE__Total.population, na.rm = TRUE),
+            .groups = "drop") 
+
+# Cast SPA to an int to join later
+df_census_spa_tot <- df_census_spa_tot %>%
+  mutate(SPA = as.integer(SPA))
+
+# Eliminate entry rows
+df_census_spa_tot <- df_census_spa_tot[!is.na(df_census_spa_tot$SPA), ]
+
+#print(df_census_spa_tot)
+
+rows_with_na <- df_census_spa_tot[!complete.cases(df_census_spa_tot), ]
+
+# Cast SPA to an int to join later
+df_census_spa_tot <- df_census_spa_tot %>%
+  mutate(SPA = as.integer(SPA))
+
+# Write data to a local file for offline use
+write.csv(df_census_spa_tot, "datasets/output_df_census_spa_tot.csv", row.names = FALSE)
+
+# Calculate homeless population per SPA
+
+df_pit <- read.csv("datasets/input_2020_PIT.csv", sep = ",", check.names = FALSE)
+
+# print(df_pit)
+
+df_pit_spa_hmlss <- df_pit %>%
+  filter(Feature == "All Persons") %>%  # Filter to include only rows where Feature is "All Persons"
+  group_by(SPA) %>%  # Group the data by SPA
+  summarise(Total_Homeless = sum(Total, na.rm = TRUE))  # Sum the Total column, handling NA values
+
+# Cast SPA to an int to join later
+df_pit_spa_hmlss <- df_pit_spa_hmlss %>%
+  mutate(SPA = as.integer(SPA))
+
+# Write data to a local file for offline use
+write.csv(df_pit_spa_hmlss, "datasets/output_df_pit_spa_hmlss.csv", row.names = FALSE)
+
+#Join to get % homeless per SPA
+df_pit_spa_hmlss_perc <- inner_join(df_pit_spa_hmlss, df_census_spa_tot, by = "SPA") %>%
+          mutate(Perc_Homeless = Total_Homeless / Total_SPA_Census)
+
+# Write data to a local file for offline use
+write.csv(df_pit_spa_hmlss_perc, "datasets/output_df_pit_spa_hmlss_perc.csv", row.names = FALSE)
+
+print("DONE")
+```
+
+# Aggregate and normalize Census demographics by SPA
+
+```{r, Census aggregation by SPA, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+
+#######AGGREGATE COUNT VALUES AS A SUM AND % VALUES AS A MEAN######
+
+# Cast all values to Int in support of future manipulations
+df_census_spa <- df_census_spa %>%
+  mutate_all(as.integer)
+
+
+# Note the vacancy information is difficult because it is on a different scale
+# Age is too granular here. Need a better aggregations
+
+# Define the names of the columns to sum
+columns_to_sum <- c(
+  "Count__SEX.AND.AGE__Total.population__Under.5.years",
+  "Count__SEX.AND.AGE__Total.population__5.to.9.years",
+  "Count__SEX.AND.AGE__Total.population__10.to.14.years",
+  "Count__SEX.AND.AGE__Total.population__15.to.19.years"
+)
+
+df_census_spa <- df_census_spa %>%
+  mutate(Count__SEX.AND.AGE__Total.population__Under_20 = rowSums(select(., all_of(columns_to_sum)), na.rm = TRUE))
+
+# Define the names of the columns to sum
+columns_to_sum <- c(
+"Count__SEX.AND.AGE__Total.population__20.to.24.years",                                                                                         
+"Count__SEX.AND.AGE__Total.population__25.to.29.years",                                                                                         
+"Count__SEX.AND.AGE__Total.population__30.to.34.years",                                                                               
+"Count__SEX.AND.AGE__Total.population__35.to.39.years",                                                                                         
+"Count__SEX.AND.AGE__Total.population__40.to.44.years",                                                                                         
+"Count__SEX.AND.AGE__Total.population__45.to.49.years",                                                                                         
+"Count__SEX.AND.AGE__Total.population__50.to.54.years",                                                                                         
+"Count__SEX.AND.AGE__Total.population__55.to.59.years",                                                                                         
+"Count__SEX.AND.AGE__Total.population__60.to.64.years",                                                                                         
+"Count__SEX.AND.AGE__Total.population__65.to.69.years",                                                                                         
+"Count__SEX.AND.AGE__Total.population__70.to.74.years",                                                                                         
+"Count__SEX.AND.AGE__Total.population__75.to.79.years",                                                                                         
+"Count__SEX.AND.AGE__Total.population__80.to.84.years",                                                                                         
+"Count__SEX.AND.AGE__Total.population__85.years.and.over"   
+)
+
+df_census_spa <- df_census_spa %>%
+  mutate(Count__SEX.AND.AGE__Total.population__Over_19 = rowSums(select(., all_of(columns_to_sum)), na.rm = TRUE))
+
+# Remove missing SPA values where tract did not map to a SPA
+df_census_spa <- na.omit(df_census_spa)
+
+df_census_perc <- df_census_spa %>%
+  # Drop the "Tract" column
+  select(-Tract) %>%
+  
+  # Group by SPA
+  group_by(SPA) %>%
+  
+  summarise(
+    
+    # Calculate mean for columns that include "VACANCY.RATES" and divide by 100
+    across(contains("VACANCY.RATES"), ~ mean(./100, na.rm = TRUE), .names = "Perc_{.col}_mean"),
+    # Sum all other columns
+    across(!contains("VACANCY.RATES"), sum, .names = "{.col}_sum"),
+    .groups = "drop"
+  )
+
+# Join df_census_perc with df_census_spa_tot to append Total_SPA_Census per SPA
+df_census_perc <- df_census_perc %>%
+  left_join(df_census_spa_tot, by = "SPA")
+
+# Divide columns that don't include "VACANCY.RATES" or "SPA" by Total_SPA_Census
+exclude_columns <- c(
+  "Perc_Count__VACANCY.RATES__Homeowner.vacancy.rate..percent...4._mean",
+  "Perc_Count__VACANCY.RATES__Rental.vacancy.rate..percent...5._mean",
+  "SPA"
+)
+
+# Calculate percentages for all columns except the ones explicitly named
+df_census_perc <- df_census_perc %>%
+  mutate(across(
+    .cols = !all_of(exclude_columns),  # Exclude specified columns
+    .fns = ~ . / Total_SPA_Census,  # Apply division function to remaining columns
+    .names = "Perc_{.col}"  # Rename resulting columns
+  ))
+
+df_census_perc%>%
+  select (SPA, Perc_Total_SPA_Census)
+
+# Remove the 'Total_SPA_Census' after calculation
+df_census_perc <- select(df_census_perc, -Perc_Total_SPA_Census)
+
+#print(names(df_census_perc)) 
+
+# Keep only SPA and columns with the prefix "Perc"
+df_census_perc <- select(df_census_perc, SPA, starts_with("Perc"))
+
+# Write data to a local file for offline use
+write.csv(df_census_perc, "datasets/output_df_census_perc.csv", row.names = FALSE)
+
+print("DONE")
+```
+
+
+# Create master table of all data
+
+```{r, Census aggregation by SPA II, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+# Append SPA homeless Rate to the census rates
+
+merged_df <- left_join(df_census_perc, df_pit_spa_hmlss_perc %>% select(SPA, Perc_Homeless), by="SPA")
+
+#print(names(merged_df))
+
+# Create wide format df
+df_lr_wide_all <- merged_df
+
+# Remove rows where SPA is NA
+df_lr_wide_all <- df_lr_wide_all[!is.na(df_lr_wide_all$SPA), ]
+
+# Check for unusable values
+null_count <- sum(sapply(df_lr_wide_all, function(x) any(is.null(x))))
+#print(null_count)
+
+na_count <- sum(sapply(df_lr_wide_all, function(x) any(is.na(x))))
+#print(na_count)
+
+na_indices <- which(is.na(df_lr_wide_all), arr.ind = TRUE)
+#print(na_indices)
+
+# Create long format df
+df_lr_long_all <- df_lr_wide_all %>%
+  pivot_longer(
+    cols = -c(SPA, Perc_Homeless),  # Exclude these columns from pivoting
+    names_to = "Demographic",            # The name of the new column for the labels
+    values_to = "Perc_Demographic"      # The name of the new column for the values
+  )
+
+# Check for unusable values
+null_count <- sum(sapply(df_lr_long_all, function(x) any(is.null(x))))
+#print(null_count)
+
+na_count <- sum(sapply(df_lr_long_all, function(x) any(is.na(x))))
+#print(na_count)
+
+print("DONE")
+
+```
+
+
+# EDA Dependent Variable
+
+```{r, Homeless Ratios by SPA, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+df <- df_lr_wide_all
+
+#print(names(df))
+
+ggplot(df, aes(x = as.factor(SPA), y = Perc_Homeless, fill = as.factor(SPA))) +
+  geom_col() +  
+  labs(
+    title = "Homeless Ratio by SPA",
+    x = "Service Planning Area (SPA)",
+    y = "Homeless Ratio",
+    fill = "SPA"  # This will set the legend title
+  ) +
+  scale_x_discrete(breaks = levels(as.factor(df$SPA))) +
+  theme_minimal() + 
+  theme(
+    axis.text.x = element_text(angle = 0, hjust = 0.5),
+    legend.title = element_text(size = 12) # This can further adjust the legend title appearance if needed
+  )
+
+# Write data to a local file for offline use
+write.csv(df_lr_wide_all, "datasets/output_df_lr_wide_all.csv", row.names = FALSE)
+
+print("DONE")
+
+```
+
+
+# EDA Independent Variables
+
+```{r, Dependent variable plot,eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+# Summary Counts of Independent varaiables
+df_census_spa_wide <- df_census_spa
+
+# Convert to long format
+df_census_spa_long <- df_census_spa_wide %>%
+  pivot_longer(
+    cols = -c(SPA, Tract), 
+    names_to = "Variable",  
+    values_to = "Value"    
+  )
+
+df_summary <- df_census_spa_long %>%
+  group_by(Variable) %>%
+  summarise(
+    Count = n(),
+    Min = min(Value, na.rm = TRUE),
+    Mean = mean(Value, na.rm = TRUE),
+    Max = max(Value, na.rm = TRUE)
+  )
+
+# Print the summary table for the paper
+#print(df_summary)
+
+###########################################################################
+
+#Plot of variance of independent variables
+
+df_lr_long_all <- df_lr_wide_all %>%
+  pivot_longer(
+    cols = -c(SPA, Perc_Homeless), 
+    names_to = "Demographic",          
+    values_to = "Perc_Demographic"     
+  )
+
+df <- df_lr_long_all
+
+demographic_levels <- levels(factor(df$Demographic))
+df$Demographic_Index <- as.integer(factor(df$Demographic))
+
+# Generate the boxplot with Demographic indices as x-axis labels
+p <- ggplot(df, aes(x = as.factor(Demographic_Index), y = Perc_Demographic)) +
+  geom_boxplot() +
+  labs(
+    title = "Variance of Demographics by Community (SPA)",
+    x = "Demographic Index", # Set the x-axis title
+    y = "Homeless Ratios"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), 
+    plot.title = element_text(hjust = 0.5), # Center the plot title
+    # Do not remove the x-axis title
+    axis.ticks.x = element_blank() 
+  )
+
+# Print the plot 
+#print(p)
+
+# Save the plot 
+ggsave("images/demographics_boxplot.png", plot = p, width = 12, height = 8, dpi = 300)
+
+print("DONE")
+```
+
+
+# Independent variable reduction
+
+```{r, Variable Reduction, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+# Remove "SPA" and "Perc_Homeless" from the dataset for variance calculation
+df_eda <- df_lr_wide_all[, !(names(df_lr_wide_all) %in% c("SPA", "Perc_Homeless"))]
+
+# Measure the IQR
+iqr_values <- apply(df_eda, 2, IQR)
+
+# Set an IQR threshold
+#iqr_threshold <- median(iqr_values)
+iqr_threshold <- quantile(iqr_values, 0.75)  # Use a higher percentile for a stricter threshold
+
+# Select variables with an IQR above the threshold
+high_iqr_vars <- names(iqr_values[iqr_values > iqr_threshold])
+
+# Include "SPA" and "Perc_Homeless" back into the list of selected variables
+final_vars <- c(high_iqr_vars, "SPA", "Perc_Homeless")
+
+additional_vars <- c(
+                     )
+
+# Combine the lists
+all_vars <- unique(c(final_vars, additional_vars))
+
+df_lr_wide_reduced <- df_lr_wide_all[, all_vars]
+
+#print(names(df_lr_wide_reduced))
+
+#print(df_lr_wide_reduced)
+
+# Define list of variables to remove from the final dataset
+manual_removal_list <- c( )
+df_lr_wide_reduced <- df_lr_wide_reduced[, !(names(df_lr_wide_reduced) %in% manual_removal_list)]
+
+#print(df_lr_wide_reduced)
+#print(names(df_lr_wide_reduced))
+
+df_lr_long_reduced <- df_lr_wide_reduced %>%
+  pivot_longer(
+    cols = -c(SPA, Perc_Homeless),  
+    names_to = "Demographic",       
+    values_to = "Perc_Demographic"  
+  )
+
+#print(df_lr_long_reduced)
+
+print("DONE")
+
+
+```
+
+
+# Replot the reduced set of variables
+
+```{r, Inependent variable plot, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+df <- df_lr_long_reduced %>%
+  select(-SPA)
+
+demographic_levels <- levels(factor(df$Demographic))
+df$Demographic_Index <- as.integer(factor(df$Demographic))
+
+# Generate the boxplot with Demographic indices as x-axis labels
+p <- ggplot(df, aes(x = as.factor(Demographic_Index), y = Perc_Demographic)) +
+  geom_boxplot() +
+  labs(
+    title = "Variance of Demographics by Community (SPA)",
+    x = "Demographic Index",
+    y = "Homeless Ratios"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), 
+    plot.title = element_text(hjust = 0.5), 
+    axis.title.x = element_blank(), 
+    axis.ticks.x = element_blank() 
+  )
+
+# Print the plot to the screen
+#print(p)
+
+# Save the plot 
+ggsave("images/demographics_boxplot_reduced.png", plot = p, width = 12, height = 8, dpi = 300)
+
+# Create a data frame for the legend
+legend_table <- data.frame(
+  Demographic_Index = 1:length(demographic_levels),
+  Demographic_Name = demographic_levels
+)
+
+# Print the legend table
+#print(legend_table)
+
+# Save to a CSV
+write.csv(legend_table, "datasets/Demographic_Index_Legend.csv", row.names = FALSE)
+
+print("DONE")
+
+```
+
+
+
+# Spearman's Correlation
+
+```{r, Correlation_check Spearmans, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+
+df_spearman <- df_lr_wide_reduced %>%
+  select(-SPA)
+
+# Create index numbers for the columns
+index_numbers <- seq_along(df_spearman)
+
+# Update column names to index numbers
+original_names <- names(df_spearman)
+names(df_spearman) <- index_numbers
+
+# Calculate Spearman
+spearman_cor <- cor(df_spearman, method = "spearman", use = "complete.obs")
+
+# Plot the matrix with index numbers for labels
+corrplot(spearman_cor, method = "color", type = "upper", order = "hclust",
+         addCoef.col = "black",   
+         tl.cex = 0.8,            
+         tl.srt = 45,             
+         tl.col = "black",        
+         number.cex = 0.5,        
+         cl.cex = 0.8             
+)
+
+# Save the plot 
+ggsave("images/spearman_correlation_matrix.png", width = 12, height = 8, dpi = 300)
+
+
+# Correct map 
+index_to_name_mapping <- setNames(as.character(index_numbers), original_names)
+
+# Print the mapping
+#print(index_to_name_mapping)
+
+
+index_name_df <- data.frame(Index = names(index_to_name_mapping), 
+                            Name = index_to_name_mapping, 
+                            stringsAsFactors = FALSE)
+
+# Write to a CSV
+write.csv(index_name_df, "datasets/output_index_to_name_mapping.csv", row.names = FALSE)
+
+###### REMOVE CORELATED FEATURES############
+
+columns_to_remove <- c(
+"Perc_Count__HOUSING.OCCUPANCY__Total.housing.units_sum",
+"Perc_Count__HOUSING.OCCUPANCY__Total.housing.units__Occupied.housing.units_sum",
+
+"Perc_Count__RELATIONSHIP__Total.population__In.households__Householder_sum", 
+"Perc_Count__RELATIONSHIP__Total.population__In.households__Child..2._sum", 
+"Perc_Count__RELATIONSHIP__Total.population__In.households__Opposite.sex.spouse_sum",
+"Perc_Count__RELATIONSHIP__Total.population__In.households__Child..2.__Under.18.years_sum",
+"Perc_Count__RELATIONSHIP__Total.population__In.households__Grandchild_sum",
+"Perc_Count__RELATIONSHIP__Total.population__In.households__Other.relatives_sum",
+"Perc_Count__RELATIONSHIP__Total.population__In.households__Nonrelatives_sum",
+"Perc_Count__HOUSEHOLDS.BY.TYPE__Total.households_sum",
+
+"Perc_Count__HOUSEHOLDS.BY.TYPE__Total.households__Married.couple.household_sum",
+"Perc_Count__HOUSEHOLDS.BY.TYPE__Total.households__Male.householder..no.spouse.or.partner.present._sum",
+"Perc_Count__HOUSEHOLDS.BY.TYPE__Total.households__Male.householder..no.spouse.or.partner.present.__Living.alone_sum",
+"Perc_Count__HOUSEHOLDS.BY.TYPE__Total.households__Female.householder..no.spouse.or.partner.present._sum",
+"Perc_Count__HOUSEHOLDS.BY.TYPE__Total.households__Female.householder..no.spouse.or.partner.present.__Living.alone_sum", 
+
+
+"Perc_Count__RACE__Total.population__One.Race_sum",
+"Perc_Count__RACE__Total.population__Two.or.More.Races_sum",
+"Perc_Count__RACE__Total.population__One.Race__Some.Other.Race_sum",
+
+"Perc_Count__HISPANIC.OR.LATINO__Total.population__Hispanic.or.Latino..of.any.race._sum",
+"Perc_Count__HISPANIC.OR.LATINO.BY.RACE__Total.population__Hispanic.or.Latino__Some.Other.Race.alone_sum",		
+"Perc_Count__HISPANIC.OR.LATINO.BY.RACE__Total.population__Hispanic.or.Latino__Two.or.More.Races_sum",		
+"Perc_Count__HISPANIC.OR.LATINO.BY.RACE__Total.population__Hispanic.or.Latino__White.alone_sum",		
+"Perc_Count__HISPANIC.OR.LATINO.BY.RACE__Total.population__Hispanic.or.Latino_sum",		
+"Perc_Count__HISPANIC.OR.LATINO.BY.RACE__Total.population__Not.Hispanic.or.Latino__Asian.alone_sum",		
+"Perc_Count__HISPANIC.OR.LATINO.BY.RACE__Total.population__Not.Hispanic.or.Latino__Black.or.African.American.alone_sum",		
+"Perc_Count__HISPANIC.OR.LATINO.BY.RACE__Total.population__Not.Hispanic.or.Latino__White.alone_sum",		
+"Perc_Count__HISPANIC.OR.LATINO.BY.RACE__Total.population__Not.Hispanic.or.Latino_sum",
+
+"Perc_Count__SEX.AND.AGE__Male.population__Selected.Age.Categories__18.years.and.over_sum",
+"Perc_Count__SEX.AND.AGE__Total.population__Selected.Age.Categories__16.years.and.over_sum",
+"Perc_Count__SEX.AND.AGE__Total.population__Selected.Age.Categories__18.years.and.over_sum",
+"Perc_Count__SEX.AND.AGE__Total.population__Selected.Age.Categories__21.years.and.over_sum", 
+"Perc_Count__SEX.AND.AGE__Total.population__Selected.Age.Categories__62.years.and.over_sum", 
+"Perc_Count__SEX.AND.AGE__Total.population__Selected.Age.Categories__65.years.and.over_sum",
+"Perc_Count__SEX.AND.AGE__Male.population__Selected.Age.Categories__16.years.and.over_sum",
+"Perc_Count__SEX.AND.AGE__Male.population__Selected.Age.Categories__21.years.and.over_sum", 
+"Perc_Count__SEX.AND.AGE__Female.population__Selected.Age.Categories__21.years.and.over_sum",
+
+"Perc_Count__SEX.AND.AGE__Total.population__Over_19_sum"
+)
+
+df_lr_wide_reduced_cln <- df_lr_wide_reduced %>%
+  select(-any_of(columns_to_remove))
+
+columns_to_add_back<- c(
+#"Perc_Count__VACANCY.RATES__Homeowner.vacancy.rate..percent...4._mean",                                                                    
+"Perc_Count__VACANCY.RATES__Rental.vacancy.rate..percent...5._mean"
+)
+
+df_lr_wide_reduced_cln <- df_lr_wide_reduced_cln %>%
+  bind_cols(df_lr_wide_all %>% select(all_of(columns_to_add_back)))
+
+spearman_reduced_cln <- df_lr_wide_reduced_cln %>%
+  select(-SPA)
+
+# Create index 
+index_numbers <- seq_along(spearman_reduced_cln)
+
+# Update column names
+original_names <- names(spearman_reduced_cln)
+names(spearman_reduced_cln) <- index_numbers
+
+# Calculate Spearman
+spearman_cor <- cor(spearman_reduced_cln, method = "spearman", use = "complete.obs")
+
+# Plot the  matrix 
+corrplot(spearman_cor, method = "color", type = "upper", order = "hclust",
+         addCoef.col = "black",   
+         tl.cex = 0.8,            
+         tl.srt = 45,             
+         tl.col = "black",        
+         number.cex = 0.5,        
+         cl.cex = 0.8             
+)
+
+
+index_to_name_mapping <- setNames(original_names, index_numbers)
+
+# Print the mapping
+#print(index_to_name_mapping)
+
+
+index_name_df <- data.frame(Index = names(index_to_name_mapping), 
+                            Name = index_to_name_mapping, 
+                            stringsAsFactors = FALSE)
+
+# Write this data frame to a CSV file
+write.csv(index_name_df, "datasets/output_index_to_name_mapping_cln.csv", row.names = FALSE)
+
+# Save the plot
+ggsave("images/spearman_correlation_matrix_cln.png", width = 12, height = 8, dpi = 300)
+
+# Write this data frame to a CSV file
+write.csv(df_lr_wide_reduced_cln, "datasets/output_df_lr_wide_reduced_cln.csv", row.names = FALSE)
+
+
+print("DONE")
+                                                                                             
+```
+
+
+# Diagnostic Plots
+
+```{r, Daignostic Plots, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+df_plots <- df_lr_wide_reduced_cln %>%
+    select(-SPA)
+
+lm_model <- lm(Perc_Homeless ~ ., data = df_plots)
+
+#summary(lm_model)
+
+# Create  diagnostic plots
+par(mfrow=c(2,2)) 
+plot(lm_model)      
+
+# Remove  outliers based on their row numbers
+
+df_lr_b <- df_lr_wide_reduced_cln %>%
+    select(-SPA)
+
+beta_model <- betareg(Perc_Homeless ~ .,data = df_lr_b)
+
+#summary(beta_model)
+
+# Create the  plots
+par(mfrow=c(2,2)) 
+plot(beta_model)       
+
+print("DONE")
+
+
+```
+
+
+
+# ANOVA
+
+```{r, Model ANOVA, eval=FALSE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+df_anova <- df_lr_long_reduced_cln %>%
+    select(-SPA)
+
+str(df_anova)
+
+anova_result <- aov(Perc_Homeless ~ Perc_Demographic, data = df_anova)
+summary(anova_result)
+
+print("DONE")
+```
+
+
+# LR Model
+
+```{r, LR model for  EDA II, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+df_lr <- df_lr_wide_reduced_cln %>%
+    select(-SPA)
+
+lm_model <- lm(Perc_Homeless ~ ., data = df_lr)
+#summary(lm_model)
+
+print("DONE")
+
+```
+
+
+# Beta Model
+
+```{r, Model Betareg, eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+#print(names(df_lr_wide_reduced_cln))
+
+df_lr_b <- df_lr_wide_reduced_cln %>%
+    select(-SPA)
+
+beta_model <- betareg(Perc_Homeless ~ .,data = df_lr_b)
+
+#summary(beta_model)
+
+print("DONE")
+
+```
+
+
+
+# XGB
+
+#Complete code showing progression of adding complexity to the code
+
+```{r, Model XGB Base Code , eval=TRUE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+# Simple model
+
+library(xgboost)
+
+# Prepare data
+df <- df_lr_wide_reduced_cln[, -which(names(df_lr_wide_reduced_cln) == "SPA")]  # Remove 'SPA' column
+labels <- df$Perc_Homeless  # Define labels
+data <- df[, -which(names(df) == "Perc_Homeless")]  # Remove labels from data
+
+# Convert to matrix
+data_matrix <- xgb.DMatrix(data = as.matrix(data), label = labels)
+
+# Train the model
+model <- xgb.train(
+  params = list(objective = "reg:squarederror"),
+  data = data_matrix,
+  nrounds = 10  
+)
+
+# Output the model
+#print(model)
+#final_rmse <- cv_results$evaluation_log$test_rmse_mean[length(cv_results$evaluation_log$test_rmse_mean)]
+#final_mae <- cv_results$evaluation_log$test_mae_mean[length(cv_results$evaluation_log$test_mae_mean)]
+
+#cat("Final RMSE: ", final_rmse, "\n")
+#cat("Final MAE: ", final_mae, "\n")
+
+
+
+
+
+# Add train test splits and learning curves and feature importance
+
+library(xgboost)
+library(ggplot2)
+
+# Prepare data
+df <- df_lr_wide_reduced_cln[, -which(names(df_lr_wide_reduced_cln) == "SPA")]
+labels <- df$Perc_Homeless
+data <- df[, -which(names(df) == "Perc_Homeless")]
+
+# Train/test split
+set.seed(123)  
+indices <- sample(1:nrow(df), size = 0.5 * nrow(df), replace = FALSE)  
+train_data <- data[indices, ]
+train_labels <- labels[indices]
+test_data <- data[-indices, ]
+test_labels <- labels[-indices]
+
+# Convert to DMatrix
+dtrain <- xgb.DMatrix(data = as.matrix(train_data), label = train_labels, missing = NA)
+dtest <- xgb.DMatrix(data = as.matrix(test_data), label = test_labels, missing = NA)
+
+# Parameters for XGBoost
+params <- list(objective = "reg:squarederror")
+
+# Watchlist to monitor training and testing data
+watchlist <- list(train = dtrain, test = dtest)
+
+# Train the model
+final_model <- xgb.train(
+  params = params,
+  data = dtrain,
+  nrounds = 50,  # 10  is the point were I see overfitting
+  watchlist = watchlist,
+  verbose = 0,  # Change to 1 to see output in console
+  print_every_n = 10,
+  early_stopping_rounds = 10
+)
+
+# Extract RMSE log
+evaluation_log <- final_model$evaluation_log
+
+# Prepare the data for plotting
+eval_df <- data.frame(
+  Iteration = seq_len(nrow(evaluation_log)),
+  Train_RMSE = evaluation_log$train_rmse,
+  Test_RMSE = evaluation_log$test_rmse
+)
+
+# Plotting with ggplot2 using a log scale for RMSE
+ggplot(eval_df, aes(x = Iteration)) +
+  geom_line(aes(y = Train_RMSE, colour = "Train RMSE")) +
+  geom_line(aes(y = Test_RMSE, colour = "Test RMSE")) +
+  labs(title = "Training and Testing RMSE per Iteration", x = "Iteration", y = "Log(RMSE)") +
+  scale_color_manual(values = c("Train RMSE" = "blue", "Test RMSE" = "red")) +
+  scale_y_log10() +  # Applying log scale to y-axis
+  theme_minimal()
+
+# Calculate feature importance
+importance <- xgb.importance(feature_names = colnames(data), model = final_model)
+
+# Print feature importance
+print(importance)
+
+# Plot feature importance
+xgb.plot.importance(importance)
+
+
+# Print the final RMSE and MAE from the last iteration of the cross-validation
+#final_rmse <- cv_results$evaluation_log$test_rmse_mean[length(cv_results$evaluation_log$test_rmse_mean)]
+#final_mae <- cv_results$evaluation_log$test_mae_mean[length(cv_results$evaluation_log$test_mae_mean)]
+
+#cat("Final RMSE: ", final_rmse, "\n")
+#cat("Final MAE: ", final_mae, "\n")
+
+
+print("DONE")
+
+
+
+
+
+
+# Add Cross Validation
+
+# Prepare data
+df <- df_lr_wide_reduced_cln[, -which(names(df_lr_wide_reduced_cln) == "SPA")]  
+labels <- df$Perc_Homeless
+data <- df[, -which(names(df) == "Perc_Homeless")]
+
+# Convert data to DMatrix
+data_matrix <- xgb.DMatrix(data = as.matrix(data), label = labels, missing = NA)
+
+# Parameters for XGBoost
+params <- list(
+  objective = "reg:squarederror",
+  eval_metric = "rmse",
+  max_depth = 6,  
+  eta = 0.1       
+)
+
+# Perform cross-validation
+cv_results <- xgb.cv(
+  params = params,
+  data = data_matrix,
+  nrounds = 50,
+  nfold = 5,
+  showsd = TRUE,
+  verbose = 0,
+  print_every_n = 10,
+  early_stopping_rounds = 10
+)
+
+# Train the final model on the full dataset
+final_model <- xgb.train(
+  params = params,
+  data = data_matrix,
+  nrounds = 50,
+  verbose = 0
+)
+
+# Calculate and print feature importance
+importance <- xgb.importance(feature_names = colnames(data), model = final_model)
+print(importance)
+
+xgb.plot.importance(importance_matrix = importance)
+
+# Plotting the learning curves using a log scale for RMSE
+eval_df <- data.frame(
+  Iteration = seq_len(nrow(cv_results$evaluation_log)),
+  Train_RMSE = cv_results$evaluation_log$train_rmse_mean,
+  Test_RMSE = cv_results$evaluation_log$test_rmse_mean
+)
+
+# Plotting with ggplot2 using a log scale for RMSE
+ggplot(eval_df, aes(x = Iteration)) +
+  geom_line(aes(y = Train_RMSE, colour = "Train RMSE")) +
+  geom_line(aes(y = Test_RMSE, colour = "Test RMSE")) +
+  labs(title = "Training and Testing RMSE per Iteration", x = "Iteration", y = "Log(RMSE)") +
+  scale_color_manual(values = c("Train RMSE" = "blue", "Test RMSE" = "red")) +
+  scale_y_log10() +  # Applying log scale to y-axis
+  theme_minimal()
+
+
+# Print the final RMSE and MAE from the last iteration of the cross-validation
+final_rmse <- cv_results$evaluation_log$test_rmse_mean[length(cv_results$evaluation_log$test_rmse_mean)]
+final_mae <- cv_results$evaluation_log$test_mae_mean[length(cv_results$evaluation_log$test_mae_mean)]
+
+cat("Final RMSE: ", final_rmse, "\n")
+cat("Final MAE: ", final_mae, "\n")
+
+print("DONE")
+
+
+
+# Add a hyper parameter grid serach
+library(xgboost)
+library(caret)
+library(data.table)  
+
+# Prepare data
+df <- df_lr_wide_reduced_cln[, -which(names(df_lr_wide_reduced_cln) == "SPA")]  # Remove 'SPA' column
+labels <- df$Perc_Homeless
+data <- df[, -which(names(df) == "Perc_Homeless")]
+
+# Convert data to a format that caret can use (data frame instead of DMatrix)
+train_data <- as.data.frame(data)
+train_data$Perc_Homeless <- labels
+
+# Set up training control
+train_control <- trainControl(
+  method = "cv",
+  number = 5,
+  verboseIter = TRUE,
+  returnData = FALSE,
+  returnResamp = "all",
+  allowParallel = TRUE
+)
+
+# grid of hyperparameters to search for my small dataset
+grid <- expand.grid(
+  nrounds = c(5, 10, 20),  
+  max_depth = c(2, 3),     
+  eta = c(0.01, 0.05),     
+  gamma = c(0, 0.1),       
+  colsample_bytree = c(0.5, 0.7),
+  min_child_weight = c(1, 2),
+  subsample = c(0.5, 0.8)
+)
+
+# Run the model
+model <- train(
+  Perc_Homeless ~ .,
+  data = train_data,
+  method = "xgbTree",
+  trControl = train_control,
+  tuneGrid = grid,
+  metric = "RMSE"
+)
+
+# Print the best tuning parameters
+print(model$bestTune)
+
+# Plot model performance
+print(model)
+
+#The final values used for the model were nrounds = 20, max_depth = 3, eta = 0.05, gamma = 0.1, colsample_bytree = 0.5,
+#min_child_weight = 1 and subsample = 0.8.
+
+# Print the final RMSE and MAE from the last iteration of the cross-validation
+final_rmse <- cv_results$evaluation_log$test_rmse_mean[length(cv_results$evaluation_log$test_rmse_mean)]
+final_mae <- cv_results$evaluation_log$test_mae_mean[length(cv_results$evaluation_log$test_mae_mean)]
+
+cat("Final RMSE: ", final_rmse, "\n")
+cat("Final MAE: ", final_mae, "\n")
+
+print("DONE")
+
+
+
+
+# Build a new model with the parameters from the grid search 
+
+# Prepare data
+df <- df_lr_wide_reduced_cln[, -which(names(df_lr_wide_reduced_cln) == "SPA")]  
+labels <- df$Perc_Homeless
+data <- df[, -which(names(df) == "Perc_Homeless")]
+
+# Convert data to DMatrix
+data_matrix <- xgb.DMatrix(data = as.matrix(data), label = labels, missing = NA)
+
+# Parameters for XGBoost # These plot
+params <- list(
+  objective = "reg:squarederror",
+  eval_metric = "rmse",
+  #max_depth = 6,  # Wont print
+  max_depth = 3,
+  #gamma = 0.1,# Wont print
+  eta = 0.1, 
+  #eta = 0.05 # Wont print
+  colsample_bytree = 0.5, # HELPED
+  min_child_weight = 1,
+  subsample = 0.8
+)
+
+# Perform cross-validation
+cv_results <- xgb.cv(
+  params = params,
+  data = data_matrix,
+  nrounds = 30, # Model was seen overfitting slightly after 40
+  nfold = 5,
+  showsd = TRUE,
+  verbose = 0,
+  print_every_n = 10,
+  early_stopping_rounds = 10
+)
+
+# Train the final model on the full dataset
+final_model <- xgb.train(
+  params = params,
+  data = data_matrix,
+  nrounds = 50,
+  verbose = 0
+)
+
+# Calculate and print feature importance
+importance <- xgb.importance(feature_names = colnames(data), model = final_model)
+print(importance)
+
+xgb.plot.importance(importance_matrix = importance)
+
+# Plotting the learning curves using a log scale for RMSE
+eval_df <- data.frame(
+  Iteration = seq_len(nrow(cv_results$evaluation_log)),
+  Train_RMSE = cv_results$evaluation_log$train_rmse_mean,
+  Test_RMSE = cv_results$evaluation_log$test_rmse_mean
+)
+
+# Plotting with ggplot2 using a log scale for RMSE
+ggplot(eval_df, aes(x = Iteration)) +
+  geom_line(aes(y = Train_RMSE, colour = "Train RMSE")) +
+  geom_line(aes(y = Test_RMSE, colour = "Test RMSE")) +
+  labs(title = "Training and Testing RMSE per Iteration", x = "Iteration", y = "Log(RMSE)") +
+  scale_color_manual(values = c("Train RMSE" = "blue", "Test RMSE" = "red")) +
+  scale_y_log10() +  
+  theme_minimal()
+
+# Print the final RMSE and MAE from the last iteration of the cross-validation
+final_rmse <- cv_results$evaluation_log$test_rmse_mean[length(cv_results$evaluation_log$test_rmse_mean)]
+final_mae <- cv_results$evaluation_log$test_mae_mean[length(cv_results$evaluation_log$test_mae_mean)]
+
+cat("Final RMSE: ", final_rmse, "\n")
+cat("Final MAE: ", final_mae, "\n")
+
+# Write data to a local file for offline use
+write.csv(importance, "datasets/output_xgb_importance.csv", row.names = FALSE)
+
+print("DONE")
+
+print(final_model$params)
+
+
+```
+
+
+
+# Appendix Code
+
+
+
+# SPA Level Comparison
+
+```{r, SPA Level Model, eval=FALSE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+library(betareg)
+library(dplyr)
+library(ggplot2)
+
+# Fit the model on the full dataset without SPA
+full_model <- betareg(Perc_Homeless ~ . - SPA, data = df_lr_wide_reduced_cln)
+#summary(full_model)
+
+# Predict using the full model for each SPA
+df_lr_wide_reduced_cln$predicted_homeless = predict(full_model, newdata = df_lr_wide_reduced_cln)
+
+# Analyzing predictions by SPA
+prediction_analysis <- df_lr_wide_reduced_cln %>%
+  group_by(SPA) %>%
+  summarise(Actual = mean(Perc_Homeless), Predicted = mean(predicted_homeless))
+
+#print(prediction_analysis)
+
+# Create the plot
+ggplot(prediction_analysis, aes(x = Actual, y = Predicted, label = SPA)) +
+  geom_point(aes(color = factor(SPA)), size = 4) +  # Points colored by SPA
+  geom_text(vjust = -0.5, hjust = 1.5) +  # Labels for each point
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +  # Line y=x
+  labs(title = "Actual vs. Predicted Homelessness Proportions by SPA",
+       x = "Actual Proportions",
+       y = "Predicted Proportions") +
+  scale_color_discrete(name = "Communities (SPA") +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+# Display the plot
+#print(ggplot2::last_plot())
+
+# Write data to a local file for offline use
+write.csv(prediction_analysis, "datasets/output_prediction_analysis.csv", row.names = FALSE)
+
+```
+
+
+
+```{r, SPA Level Model with Boostrapping, eval=FALSE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+# Pairwise scatter plots to inspect relationships
+pairs(~ Perc_Homeless + ., data = df_lr_wide_reduced_cln, pch = 21, bg = c("red", "green", "blue", "yellow")[unclass(df_lr_wide_reduced_cln$SPA)])
+
+# Correlation matrix
+correlation_matrix <- cor(df_lr_wide_reduced_cln[, -which(names(df_lr_wide_reduced_cln) == "SPA")])
+print(correlation_matrix)
+
+
+
+```
+
+
+
+```{r, SPA Level Model with Leave One Out, eval=FALSE, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+
+library(caret)
+library(betareg)
+
+# Define the control function using LOOCV
+fitControl <- trainControl(method = "LOOCV")
+
+# Fit the model using LOOCV
+loocv_model <- train(Perc_Homeless ~ . - SPA, 
+                     data = df_lr_wide_reduced_cln, 
+                     method = "betareg", 
+                     trControl = fitControl)
+
+# Print the model results to check performance
+print(loocv_model$results)
+
+```
+
