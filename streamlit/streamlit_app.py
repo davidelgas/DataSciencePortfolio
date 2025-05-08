@@ -1,16 +1,21 @@
 import streamlit as st
 import faiss
-import pickle
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from openai import OpenAI
 import pandas as pd
+import os
+import pickle
 
 # Page setup
 st.set_page_config(page_title="E9 Forum RAG", layout="wide")
 
 # Title
 st.title("E9 Forum Assistant")
+
+# Initialize session state
+if "setup_complete" not in st.session_state:
+    st.session_state.setup_complete = False
 
 # API Key input
 if "api_key" not in st.session_state:
@@ -22,42 +27,49 @@ if "api_key" not in st.session_state:
         st.rerun()
     st.stop()
 
-# Upload pre-computed files
-if "index_loaded" not in st.session_state:
-    col1, col2, col3 = st.columns(3)
+# Upload necessary files
+if not st.session_state.setup_complete:
+    st.write("### Upload Files")
+    st.write("Upload your FAISS index and CSV file to continue.")
     
-    with col1:
-        index_file = st.file_uploader("Upload FAISS index file:", type=["index"])
-    with col2:
-        embeddings_file = st.file_uploader("Upload embeddings file:", type=["pkl", "pickle"])
-    with col3:
-        metadata_file = st.file_uploader("Upload metadata file (CSV or Pickle):", type=["csv", "pkl", "pickle"])
+    faiss_file = st.file_uploader("Upload FAISS index file:", type=["index", "faiss"])
+    csv_file = st.file_uploader("Upload your forum CSV file:", type=["csv"])
     
-    if index_file and metadata_file:
+    if st.button("Process Files") and faiss_file and csv_file:
         with st.spinner("Loading files..."):
             # Save and load FAISS index
-            with open("index.faiss", "wb") as f:
-                f.write(index_file.getbuffer())
-            st.session_state.index = faiss.read_index("index.faiss")
+            os.makedirs("data", exist_ok=True)
+            with open("data/index.faiss", "wb") as f:
+                f.write(faiss_file.getbuffer())
             
-            # Load metadata
-            if metadata_file.name.endswith(".csv"):
-                st.session_state.df = pd.read_csv(metadata_file)
-            else:
-                with open("metadata.pkl", "wb") as f:
-                    f.write(metadata_file.getbuffer())
-                st.session_state.df = pd.read_pickle("metadata.pkl")
+            # Save and load CSV
+            with open("data/forum.csv", "wb") as f:
+                f.write(csv_file.getbuffer())
             
-            # Load model
+            # Load the data
+            st.session_state.index = faiss.read_index("data/index.faiss")
+            st.session_state.df = pd.read_csv("data/forum.csv")
+            
+            # Create full_text column if it doesn't exist
+            if "full_text" not in st.session_state.df.columns:
+                st.session_state.df["full_text"] = (
+                    st.session_state.df["thread_title"].fillna("") + "\n\n" +
+                    st.session_state.df["thread_first_post"].fillna("") + "\n\n" +
+                    st.session_state.df["thread_all_posts"].fillna("")
+                )
+            
+            # Load model for encoding queries
             st.session_state.model = SentenceTransformer("all-MiniLM-L6-v2")
             
-            st.session_state.index_loaded = True
+            st.session_state.setup_complete = True
             st.success("Files loaded successfully!")
             st.rerun()
     st.stop()
 
 # Query interface
-query = st.text_input("Ask a question about BMW E9:")
+st.write("### Ask a question")
+query = st.text_input("Enter your question about BMW E9:")
+
 if query:
     with st.spinner("Searching..."):
         # Encode query
@@ -71,9 +83,12 @@ if query:
         context = ""
         for i, idx in enumerate(indices[0]):
             if idx < len(st.session_state.df):
-                title = st.session_state.df.iloc[idx].get("thread_title", f"Thread {idx}")
-                content = st.session_state.df.iloc[idx]["full_text"] if "full_text" in st.session_state.df.columns else st.session_state.df.iloc[idx].get("thread_all_posts", "No content")
-                context += f"\nTHREAD {i+1}: {title}\n{content[:2000]}...\n\n"
+                title = st.session_state.df.iloc[idx]["thread_title"]
+                content = st.session_state.df.iloc[idx]["full_text"]
+                # Limit content length to avoid context issues
+                if len(content) > 1500:
+                    content = content[:1500] + "..."
+                context += f"\nTHREAD {i+1}: {title}\n{content}\n\n"
         
         # Generate response
         prompt = f"""As a BMW E9 expert, answer this question using ONLY the forum thread information below:
@@ -93,13 +108,16 @@ ANSWER:"""
         st.markdown("### Answer")
         st.write(response.choices[0].message.content)
         
-        # Show sources
-        with st.expander("View Source Threads"):
-            for i, idx in enumerate(indices[0]):
-                if idx < len(st.session_state.df):
-                    title = st.session_state.df.iloc[idx].get("thread_title", f"Thread {idx}")
-                    st.subheader(f"Thread {i+1}: {title}")
-                    st.text(f"Relevance score: {1/(1+distances[0][i]):.2f}")
-                    with st.expander("View content"):
-                        content = st.session_state.df.iloc[idx]["full_text"] if "full_text" in st.session_state.df.columns else st.session_state.df.iloc[idx].get("thread_all_posts", "No content")
-                        st.write(content[:3000] + "..." if len(content) > 3000 else content)
+        # Show sources (NO NESTED EXPANDERS - THIS FIXES THE ERROR)
+        st.markdown("### Source Threads")
+        
+        for i, idx in enumerate(indices[0]):
+            if idx < len(st.session_state.df):
+                st.markdown(f"**Thread {i+1}:** {st.session_state.df.iloc[idx]['thread_title']}")
+                st.markdown(f"**Relevance score:** {1/(1+distances[0][i]):.2f}")
+                st.text_area(f"Content of Thread {i+1}", 
+                            st.session_state.df.iloc[idx]["full_text"][:2000] + "..." 
+                            if len(st.session_state.df.iloc[idx]["full_text"]) > 2000 
+                            else st.session_state.df.iloc[idx]["full_text"],
+                            height=200)
+                st.markdown("---")
