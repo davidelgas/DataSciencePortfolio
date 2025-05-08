@@ -7,14 +7,14 @@ import pandas as pd
 import os
 import pickle
 
-# Force reset session state if needed
+# Page configuration MUST be the first Streamlit command
+st.set_page_config(page_title="E9 Forum Assistant", layout="wide")
+
+# Reset button in sidebar (moved after page config)
 if st.sidebar.button("Reset Application"):
     for key in list(st.session_state.keys()):
         del st.session_state[key]
     st.rerun()
-
-# Page setup
-st.set_page_config(page_title="E9 Forum Assistant", layout="wide")
 
 # Title
 st.title("E9 Forum Assistant")
