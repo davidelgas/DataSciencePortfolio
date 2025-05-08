@@ -3,6 +3,8 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.chains import ConversationalRetrievalChain
 from langchain_openai import ChatOpenAI
+from langchain.document_loaders import DirectoryLoader, TextLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 import os
 
 # Page configuration
@@ -39,18 +41,57 @@ if "messages" not in st.session_state:
 # Cache the RAG setup to avoid reloading on each interaction
 @st.cache_resource
 def load_rag_chain():
-    # Load your vector database - adjust paths as needed
+    # Load embeddings model
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     
-    # If you have a pre-built FAISS index - WITH the safety parameter
-    vectorstore = FAISS.load_local(
-        "path/to/your/faiss_index", 
-        embeddings,
-        allow_dangerous_deserialization=True
-    )
+    # Check if FAISS index exists
+    if os.path.exists("index/index.faiss") and os.path.exists("index/index.pkl"):
+        # Load existing index
+        vectorstore = FAISS.load_local(
+            "index", 
+            embeddings,
+            allow_dangerous_deserialization=True
+        )
+    else:
+        # Create index directory if it doesn't exist
+        os.makedirs("index", exist_ok=True)
+        
+        # Load documents from data folder
+        try:
+            loader = DirectoryLoader("data", glob="**/*.txt")
+            documents = loader.load()
+        except Exception as e:
+            # Create a sample document if no documents exist
+            st.warning("No documents found. Creating a sample document.")
+            sample_text = """This is a sample document for your RAG system.
+            Replace this with your actual data. You can add documents to the 'data' folder 
+            in your repository, and they will be automatically loaded and indexed."""
+            
+            # Create data directory if it doesn't exist
+            os.makedirs("data", exist_ok=True)
+            
+            # Write sample document
+            with open("data/sample.txt", "w") as f:
+                f.write(sample_text)
+            
+            # Load the sample document
+            loader = TextLoader("data/sample.txt")
+            documents = loader.load()
+        
+        # Split documents into chunks
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000, 
+            chunk_overlap=200
+        )
+        splits = text_splitter.split_documents(documents)
+        
+        # Create vector store
+        vectorstore = FAISS.from_documents(splits, embeddings)
+        
+        # Save vector store
+        vectorstore.save_local("index")
     
-    # Set up LLM - use OpenAI, local model or other providers
-    # This example uses OpenAI - you'll need to set OPENAI_API_KEY in your environment
+    # Set up LLM
     llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
     
     # Create the conversational chain
