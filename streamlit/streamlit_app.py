@@ -30,33 +30,71 @@ if "api_key" not in st.session_state:
 # Upload necessary files
 if not st.session_state.setup_complete:
     st.write("### Upload Files")
-    st.write("Upload your FAISS index and CSV file to continue.")
+    st.write("Upload your FAISS index and thread pickle file to continue.")
     
     faiss_file = st.file_uploader("Upload FAISS index file:", type=["index", "faiss"])
-    csv_file = st.file_uploader("Upload your forum CSV file:", type=["csv"])
+    thread_file = st.file_uploader("Upload your thread pickle file:", type=["pkl", "pickle"])
     
-    if st.button("Process Files") and faiss_file and csv_file:
+    if st.button("Process Files") and faiss_file and thread_file:
         with st.spinner("Loading files..."):
             # Save and load FAISS index
             os.makedirs("data", exist_ok=True)
             with open("data/index.faiss", "wb") as f:
                 f.write(faiss_file.getbuffer())
             
-            # Save and load CSV
-            with open("data/forum.csv", "wb") as f:
-                f.write(csv_file.getbuffer())
+            # Save and load thread pickle
+            with open("data/threads.pkl", "wb") as f:
+                f.write(thread_file.getbuffer())
             
             # Load the data
             st.session_state.index = faiss.read_index("data/index.faiss")
-            st.session_state.df = pd.read_csv("data/forum.csv")
             
-            # Create full_text column if it doesn't exist
-            if "full_text" not in st.session_state.df.columns:
-                st.session_state.df["full_text"] = (
-                    st.session_state.df["thread_title"].fillna("") + "\n\n" +
-                    st.session_state.df["thread_first_post"].fillna("") + "\n\n" +
-                    st.session_state.df["thread_all_posts"].fillna("")
-                )
+            # Load thread data from pickle
+            try:
+                with open("data/threads.pkl", "rb") as f:
+                    thread_data = pickle.load(f)
+                
+                # Check what's in the pickle file
+                if isinstance(thread_data, pd.DataFrame):
+                    # It's already a DataFrame
+                    st.session_state.df = thread_data
+                    st.write("Loaded thread data as DataFrame.")
+                elif isinstance(thread_data, list):
+                    # It's a list of documents
+                    st.write(f"Loaded {len(thread_data)} thread documents.")
+                    
+                    # Create a DataFrame from the list
+                    # Assuming each item has content and metadata
+                    data = []
+                    for i, doc in enumerate(thread_data):
+                        item = {}
+                        # Check possible formats
+                        if hasattr(doc, 'page_content') and hasattr(doc, 'metadata'):
+                            # LangChain document format
+                            item['thread_id'] = doc.metadata.get('thread_id', i)
+                            item['thread_title'] = doc.metadata.get('thread_title', f'Thread {i}')
+                            item['full_text'] = doc.page_content
+                        elif isinstance(doc, dict):
+                            # Dictionary format
+                            item['thread_id'] = doc.get('thread_id', i)
+                            item['thread_title'] = doc.get('thread_title', f'Thread {i}')
+                            item['full_text'] = doc.get('content', doc.get('text', ''))
+                        else:
+                            # Assume it's just text
+                            item['thread_id'] = i
+                            item['thread_title'] = f'Thread {i}'
+                            item['full_text'] = str(doc)
+                            
+                        data.append(item)
+                    
+                    st.session_state.df = pd.DataFrame(data)
+                else:
+                    # Unknown format
+                    st.error(f"Unknown format in pickle file: {type(thread_data)}")
+                    st.stop()
+            except Exception as e:
+                st.error(f"Error loading thread data: {e}")
+                st.stop()
             
             # Load model for encoding queries
             st.session_state.model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -83,8 +121,8 @@ if query:
         context = ""
         for i, idx in enumerate(indices[0]):
             if idx < len(st.session_state.df):
-                title = st.session_state.df.iloc[idx]["thread_title"]
-                content = st.session_state.df.iloc[idx]["full_text"]
+                title = st.session_state.df.iloc[idx].get("thread_title", f"Thread {idx}")
+                content = st.session_state.df.iloc[idx].get("full_text", "")
                 # Limit content length to avoid context issues
                 if len(content) > 1500:
                     content = content[:1500] + "..."
@@ -108,16 +146,15 @@ ANSWER:"""
         st.markdown("### Answer")
         st.write(response.choices[0].message.content)
         
-        # Show sources (NO NESTED EXPANDERS - THIS FIXES THE ERROR)
+        # Show sources
         st.markdown("### Source Threads")
         
         for i, idx in enumerate(indices[0]):
             if idx < len(st.session_state.df):
-                st.markdown(f"**Thread {i+1}:** {st.session_state.df.iloc[idx]['thread_title']}")
+                st.markdown(f"**Thread {i+1}:** {st.session_state.df.iloc[idx].get('thread_title', f'Thread {idx}')}")
                 st.markdown(f"**Relevance score:** {1/(1+distances[0][i]):.2f}")
+                content = st.session_state.df.iloc[idx].get("full_text", "")
                 st.text_area(f"Content of Thread {i+1}", 
-                            st.session_state.df.iloc[idx]["full_text"][:2000] + "..." 
-                            if len(st.session_state.df.iloc[idx]["full_text"]) > 2000 
-                            else st.session_state.df.iloc[idx]["full_text"],
+                            content[:2000] + "..." if len(content) > 2000 else content,
                             height=200)
                 st.markdown("---")
