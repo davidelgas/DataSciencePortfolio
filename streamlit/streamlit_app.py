@@ -42,17 +42,12 @@ def load_rag_chain():
     # Load your vector database - adjust paths as needed
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     
-    # If you have a pre-built FAISS index
-    vectorstore = FAISS.load_local("path/to/your/faiss_index", embeddings)
-    
-    # Or create one from documents if needed
-    # from langchain.document_loaders import DirectoryLoader
-    # from langchain.text_splitter import RecursiveCharacterTextSplitter
-    # loader = DirectoryLoader("./your_data/", glob="*.txt")
-    # documents = loader.load()
-    # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-    # splits = text_splitter.split_documents(documents)
-    # vectorstore = FAISS.from_documents(splits, embeddings)
+    # If you have a pre-built FAISS index - WITH the safety parameter
+    vectorstore = FAISS.load_local(
+        "path/to/your/faiss_index", 
+        embeddings,
+        allow_dangerous_deserialization=True
+    )
     
     # Set up LLM - use OpenAI, local model or other providers
     # This example uses OpenAI - you'll need to set OPENAI_API_KEY in your environment
