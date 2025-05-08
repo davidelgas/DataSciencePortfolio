@@ -35,7 +35,7 @@ if not st.session_state.api_key_entered:
             os.environ["OPENAI_API_KEY"] = api_key
             st.session_state.api_key_entered = True
             st.success("API key set successfully!")
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("API key cannot be empty.")
     st.stop()  # Stop execution until API key is provided
@@ -88,7 +88,7 @@ if uploaded_files:
     st.success(f"Uploaded {len(uploaded_files)} files.")
     # Clear cache to rebuild index with new files
     st.cache_resource.clear()
-    st.experimental_rerun()
+    st.rerun()
 
 # Load the RAG system
 with st.spinner("Setting up knowledge base..."):
@@ -134,4 +134,4 @@ if ready:
 st.sidebar.title("Settings")
 if st.sidebar.button("Reset API Key"):
     st.session_state.api_key_entered = False
-    st.experimental_rerun()
+    st.rerun()
