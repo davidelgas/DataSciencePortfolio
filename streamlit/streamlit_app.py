@@ -8,7 +8,7 @@ import os
 import pickle
 
 # Page setup
-st.set_page_config(page_title="E9 Forum RAG", layout="wide")
+st.set_page_config(page_title="E9 Forum Assistant", layout="wide")
 
 # Title
 st.title("E9 Forum Assistant")
@@ -58,13 +58,9 @@ if not st.session_state.setup_complete:
                 if isinstance(thread_data, pd.DataFrame):
                     # It's already a DataFrame
                     st.session_state.df = thread_data
-                    st.write("Loaded thread data as DataFrame.")
                 elif isinstance(thread_data, list):
                     # It's a list of documents
-                    st.write(f"Loaded {len(thread_data)} thread documents.")
-                    
                     # Create a DataFrame from the list
-                    # Assuming each item has content and metadata
                     data = []
                     for i, doc in enumerate(thread_data):
                         item = {}
@@ -108,6 +104,9 @@ if not st.session_state.setup_complete:
 st.write("### Ask a question")
 query = st.text_input("Enter your question about BMW E9:")
 
+# Add a checkbox to toggle source display (hidden by default)
+show_sources = st.sidebar.checkbox("Show source threads", value=False)
+
 if query:
     with st.spinner("Searching..."):
         # Encode query
@@ -146,15 +145,16 @@ ANSWER:"""
         st.markdown("### Answer")
         st.write(response.choices[0].message.content)
         
-        # Show sources
-        st.markdown("### Source Threads")
-        
-        for i, idx in enumerate(indices[0]):
-            if idx < len(st.session_state.df):
-                st.markdown(f"**Thread {i+1}:** {st.session_state.df.iloc[idx].get('thread_title', f'Thread {idx}')}")
-                st.markdown(f"**Relevance score:** {1/(1+distances[0][i]):.2f}")
-                content = st.session_state.df.iloc[idx].get("full_text", "")
-                st.text_area(f"Content of Thread {i+1}", 
-                            content[:2000] + "..." if len(content) > 2000 else content,
-                            height=200)
-                st.markdown("---")
+        # Only show sources if checkbox is checked
+        if show_sources:
+            st.markdown("### Source Threads")
+            
+            for i, idx in enumerate(indices[0]):
+                if idx < len(st.session_state.df):
+                    st.markdown(f"**Thread {i+1}:** {st.session_state.df.iloc[idx].get('thread_title', f'Thread {idx}')}")
+                    st.markdown(f"**Relevance score:** {1/(1+distances[0][i]):.2f}")
+                    content = st.session_state.df.iloc[idx].get("full_text", "")
+                    st.text_area(f"Content of Thread {i+1}", 
+                                content[:2000] + "..." if len(content) > 2000 else content,
+                                height=200)
+                    st.markdown("---")
