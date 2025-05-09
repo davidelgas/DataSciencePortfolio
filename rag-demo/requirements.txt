@@ -1,6 +1,0 @@
-flask
-sentence-transformers
-transformers
-faiss-cpu
-torch
-requests
