@@ -8,7 +8,7 @@ import os
 import pickle
 
 # Page configuration MUST be the first Streamlit command
-st.set_page_config(page_title="E9 Forum Assistant", layout="wide")
+st.set_page_config(page_title="BMW E9 Knowledge Base", layout="wide")
 
 # Reset button in sidebar (moved after page config)
 if st.sidebar.button("Reset Application"):
