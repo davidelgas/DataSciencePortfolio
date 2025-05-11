@@ -8,6 +8,7 @@ import os
 import pickle
 import gdown
 import time
+import shutil
 
 # Page configuration MUST be the first Streamlit command
 st.set_page_config(page_title="E9 Forum Assistant", layout="wide")
@@ -16,19 +17,20 @@ st.set_page_config(page_title="E9 Forum Assistant", layout="wide")
 if st.sidebar.button("Reset Application"):
     for key in list(st.session_state.keys()):
         del st.session_state[key]
-    # Also remove cached files
-    if os.path.exists("data/index.faiss"):
-        os.remove("data/index.faiss")
-    if os.path.exists("data/threads.pkl"):
-        os.remove("data/threads.pkl")
+    # Remove data directory entirely
+    if os.path.exists("data"):
+        shutil.rmtree("data")
     st.rerun()
+
+# Add option to force redownload
+force_download = st.sidebar.checkbox("Force redownload files", value=False)
 
 # Title
 st.title("E9 Forum Assistant")
 
 # Function to download files from Google Drive
 @st.cache_resource
-def download_files_from_gdrive():
+def download_files_from_gdrive(force=False):
     """Download the FAISS index and thread data from Google Drive"""
     
     start_time = time.time()
@@ -44,15 +46,24 @@ def download_files_from_gdrive():
     
     # Download FAISS index
     faiss_path = "data/index.faiss"
-    download_status['faiss_exists'] = os.path.exists(faiss_path)
+    download_status['faiss_exists_before'] = os.path.exists(faiss_path)
+    
+    # Force download if requested
+    if force and os.path.exists(faiss_path):
+        os.remove(faiss_path)
+        download_status['faiss_force_removed'] = True
     
     if not os.path.exists(faiss_path):
-        st.info("Downloading FAISS index from Google Drive...")
+        st.info("Downloading FAISS index from Google Drive... (this may take a minute)")
         faiss_url = f"https://drive.google.com/uc?id={faiss_file_id}"
         download_start = time.time()
-        gdown.download(faiss_url, faiss_path, quiet=False)
+        
+        # Use gdown with progress bar
+        output = gdown.download(faiss_url, faiss_path, quiet=False)
+        
         download_status['faiss_download_time'] = time.time() - download_start
         download_status['faiss_downloaded'] = True
+        download_status['faiss_success'] = output is not None
     else:
         download_status['faiss_downloaded'] = False
         download_status['faiss_download_time'] = 0
@@ -63,15 +74,24 @@ def download_files_from_gdrive():
     
     # Download thread data
     pkl_path = "data/threads.pkl"
-    download_status['pkl_exists'] = os.path.exists(pkl_path)
+    download_status['pkl_exists_before'] = os.path.exists(pkl_path)
+    
+    # Force download if requested
+    if force and os.path.exists(pkl_path):
+        os.remove(pkl_path)
+        download_status['pkl_force_removed'] = True
     
     if not os.path.exists(pkl_path):
-        st.info("Downloading thread data from Google Drive...")
+        st.info("Downloading thread data from Google Drive... (this may take a minute)")
         pkl_url = f"https://drive.google.com/uc?id={pkl_file_id}"
         download_start = time.time()
-        gdown.download(pkl_url, pkl_path, quiet=False)
+        
+        # Use gdown with progress bar
+        output = gdown.download(pkl_url, pkl_path, quiet=False)
+        
         download_status['pkl_download_time'] = time.time() - download_start
         download_status['pkl_downloaded'] = True
+        download_status['pkl_success'] = output is not None
     else:
         download_status['pkl_downloaded'] = False
         download_status['pkl_download_time'] = 0
@@ -118,12 +138,16 @@ def download_files_from_gdrive():
     # Display diagnostic information
     st.expander("📊 Loading Diagnostics", expanded=True).write(f"""
     **File Status:**
-    - FAISS index exists: {download_status['faiss_exists']}
-    - PKL file exists: {download_status['pkl_exists']}
+    - FAISS index existed before: {download_status['faiss_exists_before']}
+    - PKL file existed before: {download_status['pkl_exists_before']}
+    {f"- FAISS file force removed: {download_status.get('faiss_force_removed', False)}" if force else ""}
+    {f"- PKL file force removed: {download_status.get('pkl_force_removed', False)}" if force else ""}
     
     **Downloaded Files:**
     - FAISS downloaded: {download_status['faiss_downloaded']}
     - PKL downloaded: {download_status['pkl_downloaded']}
+    {f"- FAISS download successful: {download_status.get('faiss_success', 'N/A')}" if download_status['faiss_downloaded'] else ""}
+    {f"- PKL download successful: {download_status.get('pkl_success', 'N/A')}" if download_status['pkl_downloaded'] else ""}
     
     **File Sizes:**
     - FAISS: {download_status.get('faiss_size_mb', 0):.2f} MB
@@ -140,6 +164,10 @@ def download_files_from_gdrive():
     
     **Data:**
     - Number of threads loaded: {download_status['num_threads']}
+    
+    **Google Drive URLs tested:**
+    - FAISS: https://drive.google.com/uc?id={faiss_file_id}
+    - PKL: https://drive.google.com/uc?id={pkl_file_id}
     """)
     
     return index, df, model
@@ -166,10 +194,14 @@ if "api_key_set" not in st.session_state:
 elif "files_loaded" not in st.session_state:
     st.header("Step 2: Loading Files")
     
+    # Show current force download setting
+    if force_download:
+        st.warning("Force download enabled - files will be downloaded fresh from Google Drive")
+    
     with st.spinner("Loading files..."):
         try:
-            # Download and load files (with diagnostics)
-            index, df, model = download_files_from_gdrive()
+            # Download and load files (with diagnostics and force option)
+            index, df, model = download_files_from_gdrive(force=force_download)
             
             # Save to session state
             st.session_state.index = index
@@ -187,6 +219,7 @@ elif "files_loaded" not in st.session_state:
             
         except Exception as e:
             st.error(f"Error loading files: {str(e)}")
+            st.exception(e)  # This will show the full stack trace
             st.warning("Please make sure the Google Drive file IDs are correct")
             
             # Show manual upload option as fallback
@@ -254,6 +287,9 @@ else:
     if st.sidebar.button("Go Back to File Upload"):
         del st.session_state["files_loaded"]
         st.rerun()
+    
+    # Show info about current data
+    st.sidebar.info(f"Loaded {len(st.session_state.df)} threads")
     
     # Setup search options
     st.sidebar.title("Search Options")
