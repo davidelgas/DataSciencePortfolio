@@ -7,6 +7,7 @@ import pandas as pd
 import os
 import pickle
 import gdown
+import time
 
 # Page configuration MUST be the first Streamlit command
 st.set_page_config(page_title="E9 Forum Assistant", layout="wide")
@@ -15,6 +16,11 @@ st.set_page_config(page_title="E9 Forum Assistant", layout="wide")
 if st.sidebar.button("Reset Application"):
     for key in list(st.session_state.keys()):
         del st.session_state[key]
+    # Also remove cached files
+    if os.path.exists("data/index.faiss"):
+        os.remove("data/index.faiss")
+    if os.path.exists("data/threads.pkl"):
+        os.remove("data/threads.pkl")
     st.rerun()
 
 # Title
@@ -25,6 +31,8 @@ st.title("E9 Forum Assistant")
 def download_files_from_gdrive():
     """Download the FAISS index and thread data from Google Drive"""
     
+    start_time = time.time()
+    
     # Create data directory if it doesn't exist
     os.makedirs("data", exist_ok=True)
     
@@ -32,25 +40,58 @@ def download_files_from_gdrive():
     faiss_file_id = "1HIOd0eDy13RQOM5YXNhGSTsEyr_tUlks"
     pkl_file_id = "1pvCEfGz03j4Pt6wZMJKhGjDsKnGaSysW"
     
+    download_status = {}
+    
     # Download FAISS index
-    if not os.path.exists("data/index.faiss"):
+    faiss_path = "data/index.faiss"
+    download_status['faiss_exists'] = os.path.exists(faiss_path)
+    
+    if not os.path.exists(faiss_path):
         st.info("Downloading FAISS index from Google Drive...")
         faiss_url = f"https://drive.google.com/uc?id={faiss_file_id}"
-        gdown.download(faiss_url, "data/index.faiss", quiet=False)
+        download_start = time.time()
+        gdown.download(faiss_url, faiss_path, quiet=False)
+        download_status['faiss_download_time'] = time.time() - download_start
+        download_status['faiss_downloaded'] = True
+    else:
+        download_status['faiss_downloaded'] = False
+        download_status['faiss_download_time'] = 0
+    
+    # Check FAISS file size
+    if os.path.exists(faiss_path):
+        download_status['faiss_size_mb'] = os.path.getsize(faiss_path) / (1024 * 1024)
     
     # Download thread data
-    if not os.path.exists("data/threads.pkl"):
+    pkl_path = "data/threads.pkl"
+    download_status['pkl_exists'] = os.path.exists(pkl_path)
+    
+    if not os.path.exists(pkl_path):
         st.info("Downloading thread data from Google Drive...")
         pkl_url = f"https://drive.google.com/uc?id={pkl_file_id}"
-        gdown.download(pkl_url, "data/threads.pkl", quiet=False)
+        download_start = time.time()
+        gdown.download(pkl_url, pkl_path, quiet=False)
+        download_status['pkl_download_time'] = time.time() - download_start
+        download_status['pkl_downloaded'] = True
+    else:
+        download_status['pkl_downloaded'] = False
+        download_status['pkl_download_time'] = 0
+    
+    # Check PKL file size
+    if os.path.exists(pkl_path):
+        download_status['pkl_size_mb'] = os.path.getsize(pkl_path) / (1024 * 1024)
     
     # Load and return the data
-    index = faiss.read_index("data/index.faiss")
+    load_start = time.time()
+    index = faiss.read_index(faiss_path)
+    download_status['index_load_time'] = time.time() - load_start
     
-    with open("data/threads.pkl", "rb") as f:
+    load_start = time.time()
+    with open(pkl_path, "rb") as f:
         thread_data = pickle.load(f)
+    download_status['pkl_load_time'] = time.time() - load_start
     
     # Convert to DataFrame if needed
+    df_start = time.time()
     if isinstance(thread_data, pd.DataFrame):
         df = thread_data
     else:
@@ -64,9 +105,42 @@ def download_files_from_gdrive():
             else:
                 data.append({"id": i, "content": str(item)})
         df = pd.DataFrame(data)
+    download_status['df_conversion_time'] = time.time() - df_start
+    download_status['num_threads'] = len(df)
     
     # Load sentence transformer model
+    model_start = time.time()
     model = SentenceTransformer("all-MiniLM-L6-v2")
+    download_status['model_load_time'] = time.time() - model_start
+    
+    download_status['total_time'] = time.time() - start_time
+    
+    # Display diagnostic information
+    st.expander("📊 Loading Diagnostics", expanded=True).write(f"""
+    **File Status:**
+    - FAISS index exists: {download_status['faiss_exists']}
+    - PKL file exists: {download_status['pkl_exists']}
+    
+    **Downloaded Files:**
+    - FAISS downloaded: {download_status['faiss_downloaded']}
+    - PKL downloaded: {download_status['pkl_downloaded']}
+    
+    **File Sizes:**
+    - FAISS: {download_status.get('faiss_size_mb', 0):.2f} MB
+    - PKL: {download_status.get('pkl_size_mb', 0):.2f} MB
+    
+    **Timing (seconds):**
+    - FAISS download: {download_status['faiss_download_time']:.2f}s
+    - PKL download: {download_status['pkl_download_time']:.2f}s
+    - Index loading: {download_status['index_load_time']:.2f}s
+    - PKL loading: {download_status['pkl_load_time']:.2f}s
+    - DataFrame conversion: {download_status['df_conversion_time']:.2f}s
+    - Model loading: {download_status['model_load_time']:.2f}s
+    - **Total time: {download_status['total_time']:.2f}s**
+    
+    **Data:**
+    - Number of threads loaded: {download_status['num_threads']}
+    """)
     
     return index, df, model
 
@@ -92,9 +166,9 @@ if "api_key_set" not in st.session_state:
 elif "files_loaded" not in st.session_state:
     st.header("Step 2: Loading Files")
     
-    with st.spinner("Downloading and loading files from Google Drive..."):
+    with st.spinner("Loading files..."):
         try:
-            # Download and load files
+            # Download and load files (with diagnostics)
             index, df, model = download_files_from_gdrive()
             
             # Save to session state
@@ -106,7 +180,10 @@ elif "files_loaded" not in st.session_state:
             
             st.success("Files loaded successfully!")
             st.info(f"Loaded {len(df)} forum threads")
-            st.rerun()
+            
+            # Add a button to continue
+            if st.button("Continue to Assistant"):
+                st.rerun()
             
         except Exception as e:
             st.error(f"Error loading files: {str(e)}")
