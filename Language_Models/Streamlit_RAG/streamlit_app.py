@@ -28,10 +28,9 @@ def download_files_from_gdrive():
     # Create data directory if it doesn't exist
     os.makedirs("data", exist_ok=True)
     
-    # Google Drive file IDs (you'll need to replace these with your actual file IDs)
-    # These IDs come from your Google Drive shareable links
-    faiss_file_id = "1HIOd0eDy13RQOM5YXNhGSTsEyr_tUlks"  # Replace with actual ID from your file link
-    pkl_file_id = "1pvCEfGz03j4Pt6wZMJKhGjDsKnGaSysW"      # Replace with actual ID from your file link
+    # Google Drive file IDs (your actual IDs)
+    faiss_file_id = "1HIOd0eDy13RQOM5YXNhGSTsEyr_tUlks"
+    pkl_file_id = "1pvCEfGz03j4Pt6wZMJKhGjDsKnGaSysW"
     
     # Download FAISS index
     if not os.path.exists("data/index.faiss"):
@@ -172,7 +171,7 @@ elif "files_loaded" not in st.session_state:
                         except Exception as e:
                             st.error(f"Error processing uploaded files: {str(e)}")
 
-# Step 3: Query Interface (rest of your original code remains the same)
+# Step 3: Query Interface
 else:
     # Add a "Go Back" button
     if st.sidebar.button("Go Back to File Upload"):
@@ -304,3 +303,45 @@ ANSWER:"""
                 source_type = "Web"
                 final_answer = web_answer
             else:  # Forum + Web
+                # Combine answers
+                combined_prompt = f"""Combine these two answers to the question "{query}":
+                
+FORUM ANSWER: {forum_answer}
+
+WEB ANSWER: {web_answer}
+
+COMBINED ANSWER:"""
+                
+                response = st.session_state.client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[{"role": "user", "content": combined_prompt}],
+                    temperature=0.2
+                )
+                
+                combined_answer = response.choices[0].message.content
+                st.write(combined_answer)
+                source_type = "Forum + Web"
+                final_answer = combined_answer
+            
+            st.caption(f"Source: {source_type}")
+            
+            # Show sources if requested
+            if show_sources and search_mode in ["Forum Only", "Forum + Web"]:
+                st.subheader("Forum Sources")
+                for i, idx in enumerate(indices[0]):
+                    if idx < len(st.session_state.df):
+                        st.markdown(f"**Thread {i+1}:**")
+                        st.text_area(f"Content {i+1}", 
+                                    str(st.session_state.df.iloc[idx].get("full_text", 
+                                                                      st.session_state.df.iloc[idx].get("content", 
+                                                                                                     "No content")))[:1000],
+                                    height=150)
+            
+            if show_sources and search_mode in ["Web Only", "Forum + Web"] and has_web_search:
+                st.subheader("Web Sources")
+                if "organic" in search_results:
+                    for i, result in enumerate(search_results["organic"][:3]):
+                        st.markdown(f"**{result.get('title', f'Result {i+1}')}**")
+                        st.markdown(f"*{result.get('snippet', 'No snippet')}*")
+                        st.markdown(f"[Link]({result.get('link', '#')})")
+                        st.markdown("---")
