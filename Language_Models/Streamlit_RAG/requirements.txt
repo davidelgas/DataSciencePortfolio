@@ -1,8 +1,0 @@
-streamlit
-faiss-cpu
-numpy
-sentence-transformers
-openai
-pandas
-gdown
-requests
