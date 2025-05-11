@@ -11,7 +11,7 @@ import time
 import shutil
 
 # Page configuration MUST be the first Streamlit command
-st.set_page_config(page_title="E9 Forum Assistant", layout="wide")
+st.set_page_config(page_title="BMW 3.0 Assistant", layout="wide")
 
 # Reset button in sidebar (moved after page config)
 if st.sidebar.button("Reset Application"):
