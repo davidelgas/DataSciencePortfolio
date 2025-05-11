@@ -30,8 +30,8 @@ def download_files_from_gdrive():
     
     # Google Drive file IDs (you'll need to replace these with your actual file IDs)
     # These IDs come from your Google Drive shareable links
-    faiss_file_id = "YOUR_FAISS_FILE_ID_HERE"  # Replace with actual ID from your file link
-    pkl_file_id = "YOUR_PKL_FILE_ID_HERE"      # Replace with actual ID from your file link
+    faiss_file_id = "1HIOd0eDy13RQOM5YXNhGSTsEyr_tUlks"  # Replace with actual ID from your file link
+    pkl_file_id = "1pvCEfGz03j4Pt6wZMJKhGjDsKnGaSysW"      # Replace with actual ID from your file link
     
     # Download FAISS index
     if not os.path.exists("data/index.faiss"):
