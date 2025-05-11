@@ -131,8 +131,7 @@ else:
     show_sources = st.sidebar.checkbox("Show sources", value=False)
     
     # Main query interface
-    st.header("Ask a Question about BMW E9")
-    query = st.text_input("What would you like to know about BMW E9 coupes?")
+    query = st.text_input("Search the BMW 3.0 Knowledge Base")
     
     if query:
         with st.spinner("Searching BMW E9 knowledge base..."):
