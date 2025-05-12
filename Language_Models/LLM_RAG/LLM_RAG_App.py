@@ -1,4 +1,18 @@
-import streamlit as st
+# Define the output directory and file path
+output_dir = '/content/drive/Othercomputers/My Mac/CSCI_104/Week_Project/App/'
+app_path = output_dir + 'LLM_RAG_App.py'
+requirements_path = output_dir + 'requirements.txt'
+
+
+# Import necessary modules
+import os
+
+# Create the output directory if it doesn't exist
+os.makedirs(output_dir, exist_ok=True)
+
+# Create the Streamlit app and save it to the specified path
+with open(app_path, 'w') as f:
+    f.write('''import streamlit as st
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -29,9 +43,10 @@ def download_files_from_gdrive():
     os.makedirs("data", exist_ok=True)
 
     # Google Drive file IDs (your actual IDs)
-    faiss_file_id = "1HIOd0eDy13RQOM5YXNhGSTsEyr_tUlks"
-    pkl_file_id = "1pvCEfGz03j4Pt6wZMJKhGjDsKnGaSysW"
+    faiss_file_id = "1TRrV9s50lA7qH45kCHJEvUxF_26awAns"
+    pkl_file_id = "13x_LhBC-nuD64rqfI7JSYHUlUdlJsLEX"
 
+    
     # Download FAISS index
     if not os.path.exists("data/index.faiss"):
         st.info("Downloading index from Google Drive...")
@@ -164,7 +179,7 @@ else:
                         if len(content) > 1500:
                             content = content[:1500] + "..."
 
-                        context += f"\nFORUM THREAD {i+1}:\n{content}\n\n"
+                        context += f"\\nFORUM THREAD {i+1}:\\n{content}\\n\\n"
 
                 # Get forum answer
                 forum_prompt = f"""As a BMW E9 expert, answer this question using ONLY the information provided from the E9 forum:
@@ -205,12 +220,12 @@ ANSWER:"""
                     search_results = response.json()
 
                     # Format search results
-                    web_context = "Web Search Results:\n\n"
+                    web_context = "Web Search Results:\\n\\n"
                     if "organic" in search_results:
                         for i, result in enumerate(search_results["organic"][:3]):
                             title = result.get("title", "")
                             snippet = result.get("snippet", "")
-                            web_context += f"Result {i+1}: {title}\n{snippet}\n\n"
+                            web_context += f"Result {i+1}: {title}\\n{snippet}\\n\\n"
 
                     # Get web answer
                     web_prompt = f"""Using these web search results, answer the question about BMW E9:
@@ -284,4 +299,15 @@ COMBINED ANSWER:"""
                         st.markdown(f"**{result.get('title', f'Result {i+1}')}**")
                         st.markdown(f"*{result.get('snippet', 'No snippet')}*")
                         st.markdown(f"[Link]({result.get('link', '#')})")
-                        st.markdown("---")
+                        st.markdown("---")''')
+    
+# Create the requirements.txt file
+with open(requirements_path, 'w') as f:
+    f.write('''streamlit
+faiss-cpu
+numpy
+sentence-transformers
+openai
+pandas
+gdown
+requests''')    
