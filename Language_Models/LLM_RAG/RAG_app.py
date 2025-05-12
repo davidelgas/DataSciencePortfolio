@@ -116,11 +116,11 @@ else:
                             content = str(row.to_dict())
                         if len(content) > 1500:
                             content = content[:1500] + "..."
-                        context += f"
+                        context += f"""
 FORUM THREAD {i+1}:
 {content}
 
-"
+"""
 
                 forum_prompt = f"""As a BMW E9 expert, answer this question using ONLY the information provided from the E9 forum:
 
@@ -155,10 +155,11 @@ ANSWER:"""
                         for i, result in enumerate(search_results["organic"][:3]):
                             title = result.get("title", "")
                             snippet = result.get("snippet", "")
-                            web_context += f"Result {i+1}: {title}
-{snippet}
+                        context += f"""
+FORUM THREAD {i+1}:
+{content}
 
-"
+"""
                     web_prompt = f"""Using these web search results, answer the question about BMW E9:
 
 {web_context}
