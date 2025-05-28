@@ -48,5 +48,4 @@ To replace a steering wheel, you will need to first disconnect the battery to pr
 
 ## Demo Resources
 
-- **YouTube 2min**: https://youtu.be/Vf9RgCn8ow0
-- **YouTube 15m**: https://youtu.be/xAFkszSArU8
+- **YouTube**: https://www.youtube.com/watch?v=gojyE5mE0RA
