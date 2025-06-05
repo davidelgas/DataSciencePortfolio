@@ -1,0 +1,394 @@
+﻿Key,SPA,Name,Category,Feature,Sheltered,Unsheltered,Total
+1,1,Antelope Valley,TOTALS,All Persons,837,3918,4755
+2,1,Antelope Valley,TOTALS,All Households,323,3750,4073
+3,1,Antelope Valley,HOUSEHOLD COMPOSITION,Individuals (those not in family units),83,3682,3765
+4,1,Antelope Valley,HOUSEHOLD COMPOSITION,Adults 25+,55,3522,3577
+5,1,Antelope Valley,HOUSEHOLD COMPOSITION,Transitional Age Youth 18-24,28,137,165
+6,1,Antelope Valley,HOUSEHOLD COMPOSITION,Unaccompanied Minors (Under 18),0,23,23
+7,1,Antelope Valley,HOUSEHOLD COMPOSITION,Family Households (at least 1 child under 18),240,68,308
+8,1,Antelope Valley,HOUSEHOLD COMPOSITION,All Family Members,754,236,990
+9,1,Antelope Valley,HOUSEHOLD COMPOSITION,Adult-headed Households,202,57,259
+10,1,Antelope Valley,HOUSEHOLD COMPOSITION,Family Members 18+ ,251,98,349
+11,1,Antelope Valley,HOUSEHOLD COMPOSITION,Family Members under 18 (children),405,105,510
+12,1,Antelope Valley,HOUSEHOLD COMPOSITION,Transitional Age Youth-headed Households,38,11,49
+13,1,Antelope Valley,HOUSEHOLD COMPOSITION,Family Members 18+ ,38,22,60
+14,1,Antelope Valley,HOUSEHOLD COMPOSITION,Family Members under 18 (children),60,11,71
+15,1,Antelope Valley,VETERANS,All Veterans ,3,217,220
+16,1,Antelope Valley,VETERANS,Veterans who are individuals,1,216,217
+17,1,Antelope Valley,VETERANS,Veterans in families,2,1,3
+18,1,Antelope Valley,CHRONIC HOMELESSNESS,People Experiencing Chronic Homelessness (all),73,1602,1675
+19,1,Antelope Valley,CHRONIC HOMELESSNESS,Chronically Homeless who are individuals ,17,1540,1557
+20,1,Antelope Valley,CHRONIC HOMELESSNESS,Chronically Homeless Family Members (all),56,62,118
+21,1,Antelope Valley,CHRONIC HOMELESSNESS,Chronically Homeless Veterans,0,76,76
+22,1,Antelope Valley,CHRONIC HOMELESSNESS,Chronically Homeless Youth (24 & under),9,50,59
+23,1,Antelope Valley,GENDER,Male (includes transgender),342,2666,3008
+24,1,Antelope Valley,GENDER,Female (includes transgender),494,1252,1746
+25,1,Antelope Valley,GENDER,Gender Non-Binary (includes transgender),1,0,1
+26,1,Antelope Valley,GENDER,Transgender,0,30,30
+27,1,Antelope Valley,RACE / ETHNICITY,American Indian/Alaska Native,2,124,126
+28,1,Antelope Valley,RACE / ETHNICITY,Asian,3,60,63
+29,1,Antelope Valley,RACE / ETHNICITY,Black/African American,421,1174,1595
+30,1,Antelope Valley,RACE / ETHNICITY,Hispanic/Latino,323,754,1077
+31,1,Antelope Valley,RACE / ETHNICITY,Native Hawaiian/Other Pacific Islander,2,0,2
+32,1,Antelope Valley,RACE / ETHNICITY,White,71,1759,1830
+33,1,Antelope Valley,RACE / ETHNICITY,Multi-Racial/Other,15,47,62
+34,1,Antelope Valley,AGE,Under 18,465,139,604
+35,1,Antelope Valley,AGE,18 - 24,86,172,258
+36,1,Antelope Valley,AGE,25 - 54,255,2866,3121
+37,1,Antelope Valley,AGE,55 - 61,19,490,509
+38,1,Antelope Valley,AGE,62 and Over,12,251,263
+39,1,Antelope Valley,SEXUAL ORIENTATION,Straight,690,3732,4422
+40,1,Antelope Valley,SEXUAL ORIENTATION,Gay or Lesbian,6,15,21
+41,1,Antelope Valley,SEXUAL ORIENTATION,Bisexual,7,43,50
+42,1,Antelope Valley,SEXUAL ORIENTATION,Sexual Orientation Non-Conforming,134,128,262
+45,1,Antelope Valley,HEALTH & DISABILITY   (a person may report more than one).,Substance Use Disorder,7,185,192
+46,1,Antelope Valley,HEALTH & DISABILITY   (a person may report more than one).,HIV/AIDS,5,16,21
+47,1,Antelope Valley,HEALTH & DISABILITY   (a person may report more than one).,Serious Mental Illness,48,1328,1376
+48,1,Antelope Valley,HEALTH & DISABILITY   (a person may report more than one).,Developmental Disability,48,21,69
+49,1,Antelope Valley,HEALTH & DISABILITY   (a person may report more than one).,Physical Disability,38,247,285
+52,1,Antelope Valley,DOMESTIC / INTIMATE PARTNER VIOLENCE,DV/IPV Experience,100,1305,1405
+53,1,Antelope Valley,DOMESTIC / INTIMATE PARTNER VIOLENCE,Homeless Due to Fleeing DV/IPV,22,173,195
+56,2,San Fernando Valley,TOTALS,All Persons,2493,6615,9108
+57,2,San Fernando Valley,TOTALS,All Households,1180,6277,7457
+59,2,San Fernando Valley,HOUSEHOLD COMPOSITION,Individuals (those not in family units),678,6150,6828
+60,2,San Fernando Valley,HOUSEHOLD COMPOSITION,Adults 25+,571,5358,5929
+61,2,San Fernando Valley,HOUSEHOLD COMPOSITION,Transitional Age Youth 18-24,105,792,897
+62,2,San Fernando Valley,HOUSEHOLD COMPOSITION,Unaccompanied Minors (Under 18),2,0,2
+63,2,San Fernando Valley,HOUSEHOLD COMPOSITION,Family Households (at least 1 child under 18),502,127,629
+64,2,San Fernando Valley,HOUSEHOLD COMPOSITION,All Family Members,1815,465,2280
+65,2,San Fernando Valley,HOUSEHOLD COMPOSITION,Adult-headed Households,457,98,555
+66,2,San Fernando Valley,HOUSEHOLD COMPOSITION,Family Members 18+ ,739,169,908
+67,2,San Fernando Valley,HOUSEHOLD COMPOSITION,Family Members under 18 (children),953,180,1133
+68,2,San Fernando Valley,HOUSEHOLD COMPOSITION,Transitional Age Youth-headed Households,45,29,74
+69,2,San Fernando Valley,HOUSEHOLD COMPOSITION,Family Members 18+ ,53,30,83
+70,2,San Fernando Valley,HOUSEHOLD COMPOSITION,Family Members under 18 (children),70,86,156
+72,2,San Fernando Valley,VETERANS,All Veterans ,49,428,477
+73,2,San Fernando Valley,VETERANS,Veterans who are individuals,47,426,473
+74,2,San Fernando Valley,VETERANS,Veterans in families,2,2,4
+76,2,San Fernando Valley,CHRONIC HOMELESSNESS,People Experiencing Chronic Homelessness (all),296,2804,3100
+77,2,San Fernando Valley,CHRONIC HOMELESSNESS,Chronically Homeless who are individuals ,167,2677,2844
+78,2,San Fernando Valley,CHRONIC HOMELESSNESS,Chronically Homeless Family Members (all),129,127,256
+79,2,San Fernando Valley,CHRONIC HOMELESSNESS,Chronically Homeless Veterans,6,250,256
+80,2,San Fernando Valley,CHRONIC HOMELESSNESS,Chronically Homeless Youth (24 & under),18,259,277
+82,2,San Fernando Valley,GENDER,Male (includes transgender),1155,4749,5904
+83,2,San Fernando Valley,GENDER,Female (includes transgender),1333,1817,3150
+84,2,San Fernando Valley,GENDER,Gender Non-Binary (includes transgender),5,49,54
+85,2,San Fernando Valley,GENDER,Transgender,4,127,131
+87,2,San Fernando Valley,RACE / ETHNICITY,American Indian/Alaska Native,7,115,122
+88,2,San Fernando Valley,RACE / ETHNICITY,Asian,17,92,109
+89,2,San Fernando Valley,RACE / ETHNICITY,Black/African American,1093,950,2043
+90,2,San Fernando Valley,RACE / ETHNICITY,Hispanic/Latino,982,2917,3899
+91,2,San Fernando Valley,RACE / ETHNICITY,Native Hawaiian/Other Pacific Islander,14,9,23
+92,2,San Fernando Valley,RACE / ETHNICITY,White,334,2374,2708
+93,2,San Fernando Valley,RACE / ETHNICITY,Multi-Racial/Other,46,158,204
+95,2,San Fernando Valley,AGE,Under 18,1025,266,1291
+96,2,San Fernando Valley,AGE,18 - 24,251,845,1096
+97,2,San Fernando Valley,AGE,25 - 54,990,4009,4999
+98,2,San Fernando Valley,AGE,55 - 61,132,1059,1191
+99,2,San Fernando Valley,AGE,62 and Over,95,436,531
+101,2,San Fernando Valley,SEXUAL ORIENTATION,Straight,2039,6063,8102
+102,2,San Fernando Valley,SEXUAL ORIENTATION,Gay or Lesbian,32,285,317
+103,2,San Fernando Valley,SEXUAL ORIENTATION,Bisexual,45,179,224
+104,2,San Fernando Valley,SEXUAL ORIENTATION,Sexual Orientation Non-Conforming,377,88,465
+107,2,San Fernando Valley,HEALTH & DISABILITY   (a person may report more than one).,Substance Use Disorder,61,2031,2092
+108,2,San Fernando Valley,HEALTH & DISABILITY   (a person may report more than one).,HIV/AIDS,25,83,108
+109,2,San Fernando Valley,HEALTH & DISABILITY   (a person may report more than one).,Serious Mental Illness,227,1299,1526
+110,2,San Fernando Valley,HEALTH & DISABILITY   (a person may report more than one).,Developmental Disability,195,280,475
+111,2,San Fernando Valley,HEALTH & DISABILITY   (a person may report more than one).,Physical Disability,194,1097,1291
+114,2,San Fernando Valley,DOMESTIC / INTIMATE PARTNER VIOLENCE,DV/IPV Experience,352,2412,2764
+115,2,San Fernando Valley,DOMESTIC / INTIMATE PARTNER VIOLENCE,Homeless Due to Fleeing DV/IPV,94,481,575
+118,3,San Gabriel Valley,TOTALS,All Persons,1528,3027,4555
+119,3,San Gabriel Valley,TOTALS,All Households,979,2919,3898
+121,3,San Gabriel Valley,HOUSEHOLD COMPOSITION,Individuals (those not in family units),740,2875,3615
+122,3,San Gabriel Valley,HOUSEHOLD COMPOSITION,Adults 25+,609,2834,3443
+123,3,San Gabriel Valley,HOUSEHOLD COMPOSITION,Transitional Age Youth 18-24,131,41,172
+124,3,San Gabriel Valley,HOUSEHOLD COMPOSITION,Unaccompanied Minors (Under 18),0,0,0
+125,3,San Gabriel Valley,HOUSEHOLD COMPOSITION,Family Households (at least 1 child under 18),239,44,283
+126,3,San Gabriel Valley,HOUSEHOLD COMPOSITION,All Family Members,788,152,940
+127,3,San Gabriel Valley,HOUSEHOLD COMPOSITION,Adult-headed Households,217,42,259
+128,3,San Gabriel Valley,HOUSEHOLD COMPOSITION,Family Members 18+ ,234,70,304
+129,3,San Gabriel Valley,HOUSEHOLD COMPOSITION,Family Members under 18 (children),503,78,581
+130,3,San Gabriel Valley,HOUSEHOLD COMPOSITION,Transitional Age Youth-headed Households,22,2,24
+131,3,San Gabriel Valley,HOUSEHOLD COMPOSITION,Family Members 18+ ,22,2,24
+132,3,San Gabriel Valley,HOUSEHOLD COMPOSITION,Family Members under 18 (children),29,2,31
+134,3,San Gabriel Valley,VETERANS,All Veterans ,18,169,187
+135,3,San Gabriel Valley,VETERANS,Veterans who are individuals,18,168,186
+136,3,San Gabriel Valley,VETERANS,Veterans in families,0,1,1
+138,3,San Gabriel Valley,CHRONIC HOMELESSNESS,People Experiencing Chronic Homelessness (all),207,1556,1763
+139,3,San Gabriel Valley,CHRONIC HOMELESSNESS,Chronically Homeless who are individuals ,154,1520,1674
+140,3,San Gabriel Valley,CHRONIC HOMELESSNESS,Chronically Homeless Family Members (all),53,36,89
+141,3,San Gabriel Valley,CHRONIC HOMELESSNESS,Chronically Homeless Veterans,4,102,106
+142,3,San Gabriel Valley,CHRONIC HOMELESSNESS,Chronically Homeless Youth (24 & under),11,11,22
+144,3,San Gabriel Valley,GENDER,Male (includes transgender),804,2285,3089
+145,3,San Gabriel Valley,GENDER,Female (includes transgender),723,725,1448
+146,3,San Gabriel Valley,GENDER,Gender Non-Binary (includes transgender),1,17,18
+147,3,San Gabriel Valley,GENDER,Transgender,10,59,69
+149,3,San Gabriel Valley,RACE / ETHNICITY,American Indian/Alaska Native,2,40,42
+150,3,San Gabriel Valley,RACE / ETHNICITY,Asian,23,17,40
+151,3,San Gabriel Valley,RACE / ETHNICITY,Black/African American,508,519,1027
+152,3,San Gabriel Valley,RACE / ETHNICITY,Hispanic/Latino,703,1522,2225
+153,3,San Gabriel Valley,RACE / ETHNICITY,Native Hawaiian/Other Pacific Islander,4,2,6
+154,3,San Gabriel Valley,RACE / ETHNICITY,White,262,897,1159
+155,3,San Gabriel Valley,RACE / ETHNICITY,Multi-Racial/Other,26,30,56
+157,3,San Gabriel Valley,AGE,Under 18,532,80,612
+158,3,San Gabriel Valley,AGE,18 - 24,155,52,207
+159,3,San Gabriel Valley,AGE,25 - 54,590,2118,2708
+160,3,San Gabriel Valley,AGE,55 - 61,144,542,686
+161,3,San Gabriel Valley,AGE,62 and Over,107,235,342
+163,3,San Gabriel Valley,SEXUAL ORIENTATION,Straight,1342,2834,4176
+164,3,San Gabriel Valley,SEXUAL ORIENTATION,Gay or Lesbian,11,67,78
+165,3,San Gabriel Valley,SEXUAL ORIENTATION,Bisexual,18,78,96
+166,3,San Gabriel Valley,SEXUAL ORIENTATION,Sexual Orientation Non-Conforming,157,48,205
+169,3,San Gabriel Valley,HEALTH & DISABILITY   (a person may report more than one).,Substance Use Disorder,75,1208,1283
+170,3,San Gabriel Valley,HEALTH & DISABILITY   (a person may report more than one).,HIV/AIDS,15,54,69
+171,3,San Gabriel Valley,HEALTH & DISABILITY   (a person may report more than one).,Serious Mental Illness,235,884,1119
+172,3,San Gabriel Valley,HEALTH & DISABILITY   (a person may report more than one).,Developmental Disability,130,148,278
+173,3,San Gabriel Valley,HEALTH & DISABILITY   (a person may report more than one).,Physical Disability,143,842,985
+176,3,San Gabriel Valley,DOMESTIC / INTIMATE PARTNER VIOLENCE,DV/IPV Experience,177,953,1130
+177,3,San Gabriel Valley,DOMESTIC / INTIMATE PARTNER VIOLENCE,Homeless Due to Fleeing DV/IPV,44,207,251
+180,4, Metro Los Angeles ,TOTALS,All Persons,4667,12454,17121
+181,4, Metro Los Angeles ,TOTALS,All Households,3736,12059,15795
+183,4, Metro Los Angeles ,HOUSEHOLD COMPOSITION,Individuals (those not in family units),3264,11901,15165
+184,4, Metro Los Angeles ,HOUSEHOLD COMPOSITION,Adults 25+,2892,11465,14357
+185,4, Metro Los Angeles ,HOUSEHOLD COMPOSITION,Transitional Age Youth 18-24,368,435,803
+186,4, Metro Los Angeles ,HOUSEHOLD COMPOSITION,Unaccompanied Minors (Under 18),4,1,5
+187,4, Metro Los Angeles ,HOUSEHOLD COMPOSITION,Family Households (at least 1 child under 18),472,158,630
+188,4, Metro Los Angeles ,HOUSEHOLD COMPOSITION,All Family Members,1403,553,1956
+189,4, Metro Los Angeles ,HOUSEHOLD COMPOSITION,Adult-headed Households,395,151,546
+190,4, Metro Los Angeles ,HOUSEHOLD COMPOSITION,Family Members 18+ ,470,258,728
+191,4, Metro Los Angeles ,HOUSEHOLD COMPOSITION,Family Members under 18 (children),757,277,1034
+192,4, Metro Los Angeles ,HOUSEHOLD COMPOSITION,Transitional Age Youth-headed Households,77,7,84
+193,4, Metro Los Angeles ,HOUSEHOLD COMPOSITION,Family Members 18+ ,78,7,85
+194,4, Metro Los Angeles ,HOUSEHOLD COMPOSITION,Family Members under 18 (children),98,11,109
+196,4, Metro Los Angeles ,VETERANS,All Veterans ,117,732,849
+197,4, Metro Los Angeles ,VETERANS,Veterans who are individuals,116,729,845
+198,4, Metro Los Angeles ,VETERANS,Veterans in families,1,3,4
+200,4, Metro Los Angeles ,CHRONIC HOMELESSNESS,People Experiencing Chronic Homelessness (all),883,6251,7134
+201,4, Metro Los Angeles ,CHRONIC HOMELESSNESS,Chronically Homeless who are individuals ,814,6113,6927
+202,4, Metro Los Angeles ,CHRONIC HOMELESSNESS,Chronically Homeless Family Members (all),69,138,207
+203,4, Metro Los Angeles ,CHRONIC HOMELESSNESS,Chronically Homeless Veterans,16,519,535
+204,4, Metro Los Angeles ,CHRONIC HOMELESSNESS,Chronically Homeless Youth (24 & under),84,126,210
+206,4, Metro Los Angeles ,GENDER,Male (includes transgender),2699,9715,12414
+207,4, Metro Los Angeles ,GENDER,Female (includes transgender),1934,2677,4611
+208,4, Metro Los Angeles ,GENDER,Gender Non-Binary (includes transgender),34,62,96
+209,4, Metro Los Angeles ,GENDER,Transgender,129,223,352
+211,4, Metro Los Angeles ,RACE / ETHNICITY,American Indian/Alaska Native,23,184,207
+212,4, Metro Los Angeles ,RACE / ETHNICITY,Asian,59,221,280
+213,4, Metro Los Angeles ,RACE / ETHNICITY,Black/African American,2254,4124,6378
+214,4, Metro Los Angeles ,RACE / ETHNICITY,Hispanic/Latino,1510,3620,5130
+215,4, Metro Los Angeles ,RACE / ETHNICITY,Native Hawaiian/Other Pacific Islander,19,1,20
+216,4, Metro Los Angeles ,RACE / ETHNICITY,White,708,4059,4767
+217,4, Metro Los Angeles ,RACE / ETHNICITY,Multi-Racial/Other,94,245,339
+219,4, Metro Los Angeles ,AGE,Under 18,859,289,1148
+220,4, Metro Los Angeles ,AGE,18 - 24,649,480,1129
+221,4, Metro Los Angeles ,AGE,25 - 54,2061,8348,10409
+222,4, Metro Los Angeles ,AGE,55 - 61,512,2076,2588
+223,4, Metro Los Angeles ,AGE,62 and Over,586,1261,1847
+225,4, Metro Los Angeles ,SEXUAL ORIENTATION,Straight,3720,11437,15157
+226,4, Metro Los Angeles ,SEXUAL ORIENTATION,Gay or Lesbian,351,440,791
+227,4, Metro Los Angeles ,SEXUAL ORIENTATION,Bisexual,221,360,581
+228,4, Metro Los Angeles ,SEXUAL ORIENTATION,Sexual Orientation Non-Conforming,375,217,592
+231,4, Metro Los Angeles ,HEALTH & DISABILITY   (a person may report more than one).,Substance Use Disorder,376,4639,5015
+232,4, Metro Los Angeles ,HEALTH & DISABILITY   (a person may report more than one).,HIV/AIDS,174,373,547
+233,4, Metro Los Angeles ,HEALTH & DISABILITY   (a person may report more than one).,Serious Mental Illness,843,3368,4211
+234,4, Metro Los Angeles ,HEALTH & DISABILITY   (a person may report more than one).,Developmental Disability,688,1436,2124
+235,4, Metro Los Angeles ,HEALTH & DISABILITY   (a person may report more than one).,Physical Disability,656,2340,2996
+238,4, Metro Los Angeles ,DOMESTIC / INTIMATE PARTNER VIOLENCE,DV/IPV Experience,957,4134,5091
+239,4, Metro Los Angeles ,DOMESTIC / INTIMATE PARTNER VIOLENCE,Homeless Due to Fleeing DV/IPV,288,985,1273
+242,5,West Los Angeles County,TOTALS,All Persons,967,5042,6009
+243,5,West Los Angeles County,TOTALS,All Households,610,4853,5463
+245,5,West Los Angeles County,HOUSEHOLD COMPOSITION,Individuals (those not in family units),439,4775,5214
+246,5,West Los Angeles County,HOUSEHOLD COMPOSITION,Adults 25+,405,4495,4900
+247,5,West Los Angeles County,HOUSEHOLD COMPOSITION,Transitional Age Youth 18-24,30,278,308
+248,5,West Los Angeles County,HOUSEHOLD COMPOSITION,Unaccompanied Minors (Under 18),4,2,6
+249,5,West Los Angeles County,HOUSEHOLD COMPOSITION,Family Households (at least 1 child under 18),171,78,249
+250,5,West Los Angeles County,HOUSEHOLD COMPOSITION,All Family Members,528,267,795
+251,5,West Los Angeles County,HOUSEHOLD COMPOSITION,Adult-headed Households,149,65,214
+252,5,West Los Angeles County,HOUSEHOLD COMPOSITION,Family Members 18+ ,193,112,305
+253,5,West Los Angeles County,HOUSEHOLD COMPOSITION,Family Members under 18 (children),280,121,401
+254,5,West Los Angeles County,HOUSEHOLD COMPOSITION,Transitional Age Youth-headed Households,22,13,35
+255,5,West Los Angeles County,HOUSEHOLD COMPOSITION,Family Members 18+ ,24,13,37
+256,5,West Los Angeles County,HOUSEHOLD COMPOSITION,Family Members under 18 (children),31,21,52
+258,5,West Los Angeles County,VETERANS,All Veterans ,200,583,783
+259,5,West Los Angeles County,VETERANS,Veterans who are individuals,189,582,771
+260,5,West Los Angeles County,VETERANS,Veterans in families,11,1,12
+262,5,West Los Angeles County,CHRONIC HOMELESSNESS,People Experiencing Chronic Homelessness (all),104,2312,2416
+263,5,West Los Angeles County,CHRONIC HOMELESSNESS,Chronically Homeless who are individuals ,72,2243,2315
+264,5,West Los Angeles County,CHRONIC HOMELESSNESS,Chronically Homeless Family Members (all),32,69,101
+265,5,West Los Angeles County,CHRONIC HOMELESSNESS,Chronically Homeless Veterans,16,297,313
+266,5,West Los Angeles County,CHRONIC HOMELESSNESS,Chronically Homeless Youth (24 & under),6,89,95
+268,5,West Los Angeles County,GENDER,Male (includes transgender),564,3798,4362
+269,5,West Los Angeles County,GENDER,Female (includes transgender),402,1202,1604
+270,5,West Los Angeles County,GENDER,Gender Non-Binary (includes transgender),1,42,43
+271,5,West Los Angeles County,GENDER,Transgender,2,93,95
+273,5,West Los Angeles County,RACE / ETHNICITY,American Indian/Alaska Native,3,52,55
+274,5,West Los Angeles County,RACE / ETHNICITY,Asian,9,111,120
+275,5,West Los Angeles County,RACE / ETHNICITY,Black/African American,450,1337,1787
+276,5,West Los Angeles County,RACE / ETHNICITY,Hispanic/Latino,295,1007,1302
+277,5,West Los Angeles County,RACE / ETHNICITY,Native Hawaiian/Other Pacific Islander,4,33,37
+278,5,West Los Angeles County,RACE / ETHNICITY,White,184,2247,2431
+279,5,West Los Angeles County,RACE / ETHNICITY,Multi-Racial/Other,22,255,277
+281,5,West Los Angeles County,AGE,Under 18,315,144,459
+282,5,West Los Angeles County,AGE,18 - 24,62,308,370
+283,5,West Los Angeles County,AGE,25 - 54,408,3354,3762
+284,5,West Los Angeles County,AGE,55 - 61,79,703,782
+285,5,West Los Angeles County,AGE,62 and Over,103,533,636
+287,5,West Los Angeles County,SEXUAL ORIENTATION,Straight,834,4653,5487
+288,5,West Los Angeles County,SEXUAL ORIENTATION,Gay or Lesbian,17,174,191
+289,5,West Los Angeles County,SEXUAL ORIENTATION,Bisexual,16,141,157
+290,5,West Los Angeles County,SEXUAL ORIENTATION,Sexual Orientation Non-Conforming,100,74,174
+293,5,West Los Angeles County,HEALTH & DISABILITY   (a person may report more than one).,Substance Use Disorder,90,1315,1405
+294,5,West Los Angeles County,HEALTH & DISABILITY   (a person may report more than one).,HIV/AIDS,15,57,72
+295,5,West Los Angeles County,HEALTH & DISABILITY   (a person may report more than one).,Serious Mental Illness,184,1343,1527
+296,5,West Los Angeles County,HEALTH & DISABILITY   (a person may report more than one).,Developmental Disability,86,613,699
+297,5,West Los Angeles County,HEALTH & DISABILITY   (a person may report more than one).,Physical Disability,123,933,1056
+300,5,West Los Angeles County,DOMESTIC / INTIMATE PARTNER VIOLENCE,DV/IPV Experience,126,1867,1993
+301,5,West Los Angeles County,DOMESTIC / INTIMATE PARTNER VIOLENCE,Homeless Due to Fleeing DV/IPV,37,305,342
+304,6, South Los Angeles County,TOTALS,All Persons,5121,7891,13012
+305,6, South Los Angeles County,TOTALS,All Households,2978,7315,10293
+307,6, South Los Angeles County,HOUSEHOLD COMPOSITION,Individuals (those not in family units),1841,7082,8923
+308,6, South Los Angeles County,HOUSEHOLD COMPOSITION,Adults 25+,1681,6909,8590
+309,6, South Los Angeles County,HOUSEHOLD COMPOSITION,Transitional Age Youth 18-24,153,156,309
+310,6, South Los Angeles County,HOUSEHOLD COMPOSITION,Unaccompanied Minors (Under 18),7,17,24
+311,6, South Los Angeles County,HOUSEHOLD COMPOSITION,Family Households (at least 1 child under 18),1137,233,1370
+312,6, South Los Angeles County,HOUSEHOLD COMPOSITION,All Family Members,3280,809,4089
+313,6, South Los Angeles County,HOUSEHOLD COMPOSITION,Adult-headed Households,936,154,1090
+314,6, South Los Angeles County,HOUSEHOLD COMPOSITION,Family Members 18+ ,995,271,1266
+315,6, South Los Angeles County,HOUSEHOLD COMPOSITION,Family Members under 18 (children),1782,280,2062
+316,6, South Los Angeles County,HOUSEHOLD COMPOSITION,Transitional Age Youth-headed Households,201,79,280
+317,6, South Los Angeles County,HOUSEHOLD COMPOSITION,Family Members 18+ ,202,86,288
+318,6, South Los Angeles County,HOUSEHOLD COMPOSITION,Family Members under 18 (children),301,172,473
+320,6, South Los Angeles County,VETERANS,All Veterans ,131,268,399
+321,6, South Los Angeles County,VETERANS,Veterans who are individuals,131,265,396
+322,6, South Los Angeles County,VETERANS,Veterans in families,0,3,3
+324,6, South Los Angeles County,CHRONIC HOMELESSNESS,People Experiencing Chronic Homelessness (all),629,3496,4125
+325,6, South Los Angeles County,CHRONIC HOMELESSNESS,Chronically Homeless who are individuals ,391,3269,3660
+326,6, South Los Angeles County,CHRONIC HOMELESSNESS,Chronically Homeless Family Members (all),238,227,465
+327,6, South Los Angeles County,CHRONIC HOMELESSNESS,Chronically Homeless Veterans,22,119,141
+328,6, South Los Angeles County,CHRONIC HOMELESSNESS,Chronically Homeless Youth (24 & under),61,134,195
+330,6, South Los Angeles County,GENDER,Male (includes transgender),2382,5448,7830
+331,6, South Los Angeles County,GENDER,Female (includes transgender),2734,2441,5175
+332,6, South Los Angeles County,GENDER,Gender Non-Binary (includes transgender),5,2,7
+333,6, South Los Angeles County,GENDER,Transgender,7,113,120
+335,6, South Los Angeles County,RACE / ETHNICITY,American Indian/Alaska Native,11,32,43
+336,6, South Los Angeles County,RACE / ETHNICITY,Asian,35,38,73
+337,6, South Los Angeles County,RACE / ETHNICITY,Black/African American,2818,3845,6663
+338,6, South Los Angeles County,RACE / ETHNICITY,Hispanic/Latino,1713,3294,5007
+339,6, South Los Angeles County,RACE / ETHNICITY,Native Hawaiian/Other Pacific Islander,22,0,22
+340,6, South Los Angeles County,RACE / ETHNICITY,White,434,509,943
+341,6, South Los Angeles County,RACE / ETHNICITY,Multi-Racial/Other,88,173,261
+343,6, South Los Angeles County,AGE,Under 18,2090,469,2559
+344,6, South Los Angeles County,AGE,18 - 24,372,285,657
+345,6, South Los Angeles County,AGE,25 - 54,2036,4418,6454
+346,6, South Los Angeles County,AGE,55 - 61,383,1500,1883
+347,6, South Los Angeles County,AGE,62 and Over,240,1219,1459
+349,6, South Los Angeles County,SEXUAL ORIENTATION,Straight,4392,7625,12017
+350,6, South Los Angeles County,SEXUAL ORIENTATION,Gay or Lesbian,65,106,171
+351,6, South Los Angeles County,SEXUAL ORIENTATION,Bisexual,61,92,153
+352,6, South Los Angeles County,SEXUAL ORIENTATION,Sexual Orientation Non-Conforming,603,68,671
+355,6, South Los Angeles County,HEALTH & DISABILITY   (a person may report more than one).,Substance Use Disorder,186,2080,2266
+356,6, South Los Angeles County,HEALTH & DISABILITY   (a person may report more than one).,HIV/AIDS,57,226,283
+357,6, South Los Angeles County,HEALTH & DISABILITY   (a person may report more than one).,Serious Mental Illness,566,1995,2561
+358,6, South Los Angeles County,HEALTH & DISABILITY   (a person may report more than one).,Developmental Disability,397,737,1134
+359,6, South Los Angeles County,HEALTH & DISABILITY   (a person may report more than one).,Physical Disability,444,1718,2162
+362,6, South Los Angeles County,DOMESTIC / INTIMATE PARTNER VIOLENCE,DV/IPV Experience,668,2601,3269
+363,6, South Los Angeles County,DOMESTIC / INTIMATE PARTNER VIOLENCE,Homeless Due to Fleeing DV/IPV,194,561,755
+366,7,East Los Angeles County ,TOTALS,All Persons,955,3631,4586
+367,7,East Los Angeles County ,TOTALS,All Households,775,3471,4246
+369,7,East Los Angeles County ,HOUSEHOLD COMPOSITION,Individuals (those not in family units),687,3407,4094
+370,7,East Los Angeles County ,HOUSEHOLD COMPOSITION,Adults 25+,574,3221,3795
+371,7,East Los Angeles County ,HOUSEHOLD COMPOSITION,Transitional Age Youth 18-24,113,185,298
+372,7,East Los Angeles County ,HOUSEHOLD COMPOSITION,Unaccompanied Minors (Under 18),0,1,1
+373,7,East Los Angeles County ,HOUSEHOLD COMPOSITION,Family Households (at least 1 child under 18),88,64,152
+374,7,East Los Angeles County ,HOUSEHOLD COMPOSITION,All Family Members,268,224,492
+375,7,East Los Angeles County ,HOUSEHOLD COMPOSITION,Adult-headed Households,74,64,138
+376,7,East Los Angeles County ,HOUSEHOLD COMPOSITION,Family Members 18+ ,84,108,192
+377,7,East Los Angeles County ,HOUSEHOLD COMPOSITION,Family Members under 18 (children),150,116,266
+378,7,East Los Angeles County ,HOUSEHOLD COMPOSITION,Transitional Age Youth-headed Households,14,0,14
+379,7,East Los Angeles County ,HOUSEHOLD COMPOSITION,Family Members 18+ ,15,0,15
+380,7,East Los Angeles County ,HOUSEHOLD COMPOSITION,Family Members under 18 (children),19,0,19
+382,7,East Los Angeles County ,VETERANS,All Veterans ,160,186,346
+383,7,East Los Angeles County ,VETERANS,Veterans who are individuals,160,185,345
+384,7,East Los Angeles County ,VETERANS,Veterans in families,0,1,1
+386,7,East Los Angeles County ,CHRONIC HOMELESSNESS,People Experiencing Chronic Homelessness (all),136,2074,2210
+387,7,East Los Angeles County ,CHRONIC HOMELESSNESS,Chronically Homeless who are individuals ,116,2019,2135
+388,7,East Los Angeles County ,CHRONIC HOMELESSNESS,Chronically Homeless Family Members (all),20,55,75
+389,7,East Los Angeles County ,CHRONIC HOMELESSNESS,Chronically Homeless Veterans,9,108,117
+390,7,East Los Angeles County ,CHRONIC HOMELESSNESS,Chronically Homeless Youth (24 & under),5,51,56
+392,7,East Los Angeles County ,GENDER,Male (includes transgender),556,2578,3134
+393,7,East Los Angeles County ,GENDER,Female (includes transgender),398,1035,1433
+394,7,East Los Angeles County ,GENDER,Gender Non-Binary (includes transgender),1,18,19
+395,7,East Los Angeles County ,GENDER,Transgender,4,13,17
+397,7,East Los Angeles County ,RACE / ETHNICITY,American Indian/Alaska Native,8,20,28
+398,7,East Los Angeles County ,RACE / ETHNICITY,Asian,15,13,28
+399,7,East Los Angeles County ,RACE / ETHNICITY,Black/African American,332,409,741
+400,7,East Los Angeles County ,RACE / ETHNICITY,Hispanic/Latino,418,2488,2906
+401,7,East Los Angeles County ,RACE / ETHNICITY,Native Hawaiian/Other Pacific Islander,3,54,57
+402,7,East Los Angeles County ,RACE / ETHNICITY,White,165,642,807
+403,7,East Los Angeles County ,RACE / ETHNICITY,Multi-Racial/Other,14,5,19
+405,7,East Los Angeles County ,AGE,Under 18,169,117,286
+406,7,East Los Angeles County ,AGE,18 - 24,130,199,329
+407,7,East Los Angeles County ,AGE,25 - 54,395,2510,2905
+408,7,East Los Angeles County ,AGE,55 - 61,132,314,446
+409,7,East Los Angeles County ,AGE,62 and Over,129,491,620
+411,7,East Los Angeles County ,SEXUAL ORIENTATION,Straight,855,3387,4242
+412,7,East Los Angeles County ,SEXUAL ORIENTATION,Gay or Lesbian,15,63,78
+413,7,East Los Angeles County ,SEXUAL ORIENTATION,Bisexual,19,174,193
+414,7,East Los Angeles County ,SEXUAL ORIENTATION,Sexual Orientation Non-Conforming,66,7,73
+417,7,East Los Angeles County ,HEALTH & DISABILITY   (a person may report more than one).,Substance Use Disorder,85,1452,1537
+418,7,East Los Angeles County ,HEALTH & DISABILITY   (a person may report more than one).,HIV/AIDS,8,22,30
+419,7,East Los Angeles County ,HEALTH & DISABILITY   (a person may report more than one).,Serious Mental Illness,198,791,989
+420,7,East Los Angeles County ,HEALTH & DISABILITY   (a person may report more than one).,Developmental Disability,88,134,222
+421,7,East Los Angeles County ,HEALTH & DISABILITY   (a person may report more than one).,Physical Disability,181,898,1079
+424,7,East Los Angeles County ,DOMESTIC / INTIMATE PARTNER VIOLENCE,DV/IPV Experience,152,1369,1521
+425,7,East Los Angeles County ,DOMESTIC / INTIMATE PARTNER VIOLENCE,Homeless Due to Fleeing DV/IPV,39,98,137
+428,8,South Bay,TOTALS,All Persons,1048,3512,4560
+429,8,South Bay,TOTALS,All Households,630,3342,3972
+431,8,South Bay,HOUSEHOLD COMPOSITION,Individuals (those not in family units),411,3275,3686
+432,8,South Bay,HOUSEHOLD COMPOSITION,Adults 25+,377,3224,3601
+433,8,South Bay,HOUSEHOLD COMPOSITION,Transitional Age Youth 18-24,26,51,77
+434,8,South Bay,HOUSEHOLD COMPOSITION,Unaccompanied Minors (Under 18),8,0,8
+435,8,South Bay,HOUSEHOLD COMPOSITION,Family Households (at least 1 child under 18),219,67,286
+436,8,South Bay,HOUSEHOLD COMPOSITION,All Family Members,637,237,874
+437,8,South Bay,HOUSEHOLD COMPOSITION,Adult-headed Households,191,66,257
+438,8,South Bay,HOUSEHOLD COMPOSITION,Family Members 18+ ,209,111,320
+439,8,South Bay,HOUSEHOLD COMPOSITION,Family Members under 18 (children),359,123,482
+440,8,South Bay,HOUSEHOLD COMPOSITION,Transitional Age Youth-headed Households,28,1,29
+441,8,South Bay,HOUSEHOLD COMPOSITION,Family Members 18+ ,28,2,30
+442,8,South Bay,HOUSEHOLD COMPOSITION,Family Members under 18 (children),41,1,42
+444,8,South Bay,VETERANS,All Veterans ,199,221,420
+445,8,South Bay,VETERANS,Veterans who are individuals,199,220,419
+446,8,South Bay,VETERANS,Veterans in families,0,1,1
+448,8,South Bay,CHRONIC HOMELESSNESS,People Experiencing Chronic Homelessness (all),97,1962,2059
+449,8,South Bay,CHRONIC HOMELESSNESS,Chronically Homeless who are individuals ,59,1904,1963
+450,8,South Bay,CHRONIC HOMELESSNESS,Chronically Homeless Family Members (all),38,58,96
+451,8,South Bay,CHRONIC HOMELESSNESS,Chronically Homeless Veterans,3,135,138
+452,8,South Bay,CHRONIC HOMELESSNESS,Chronically Homeless Youth (24 & under),7,14,21
+454,8,South Bay,GENDER,Male (includes transgender),611,2445,3056
+455,8,South Bay,GENDER,Female (includes transgender),437,1067,1504
+456,8,South Bay,GENDER,Gender Non-Binary (includes transgender),0,0,0
+457,8,South Bay,GENDER,Transgender,2,26,28
+459,8,South Bay,RACE / ETHNICITY,American Indian/Alaska Native,2,61,63
+460,8,South Bay,RACE / ETHNICITY,Asian,6,55,61
+461,8,South Bay,RACE / ETHNICITY,Black/African American,548,727,1275
+462,8,South Bay,RACE / ETHNICITY,Hispanic/Latino,335,1124,1459
+463,8,South Bay,RACE / ETHNICITY,Native Hawaiian/Other Pacific Islander,5,33,38
+464,8,South Bay,RACE / ETHNICITY,White,131,1432,1563
+465,8,South Bay,RACE / ETHNICITY,Multi-Racial/Other,21,80,101
+467,8,South Bay,AGE,Under 18,408,124,532
+468,8,South Bay,AGE,18 - 24,67,68,135
+469,8,South Bay,AGE,25 - 54,400,2380,2780
+470,8,South Bay,AGE,55 - 61,94,427,521
+471,8,South Bay,AGE,62 and Over,79,513,592
+473,8,South Bay,SEXUAL ORIENTATION,Straight,917,3365,4282
+474,8,South Bay,SEXUAL ORIENTATION,Gay or Lesbian,7,37,44
+475,8,South Bay,SEXUAL ORIENTATION,Bisexual,8,98,106
+476,8,South Bay,SEXUAL ORIENTATION,Sexual Orientation Non-Conforming,116,12,128
+479,8,South Bay,HEALTH & DISABILITY   (a person may report more than one).,Substance Use Disorder,39,1374,1413
+480,8,South Bay,HEALTH & DISABILITY   (a person may report more than one).,HIV/AIDS,9,26,35
+481,8,South Bay,HEALTH & DISABILITY   (a person may report more than one).,Serious Mental Illness,113,703,816
+482,8,South Bay,HEALTH & DISABILITY   (a person may report more than one).,Developmental Disability,68,223,291
+483,8,South Bay,HEALTH & DISABILITY   (a person may report more than one).,Physical Disability,96,883,979
+486,8,South Bay,DOMESTIC / INTIMATE PARTNER VIOLENCE,DV/IPV Experience,98,1074,1172
+487,8,South Bay,DOMESTIC / INTIMATE PARTNER VIOLENCE,Homeless Due to Fleeing DV/IPV,23,333,356
+488,,,DOMESTIC / INTIMATE PARTNER VIOLENCE,,,,
